@@ -17,20 +17,21 @@ import java.util.logging.Logger;
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class ServiceThread  extends Thread{
+    final SynchronizedWorkFlag swf;
     ServerSocket st;
-    private boolean work=true;
     public ServiceThread(int port) throws IOException{
+        this.swf = SynchronizedWorkFlag.INSTANCE;
         st = new ServerSocket(port);
     }
-    public synchronized boolean getWork(){
-        return work;
-    }
+    
     @Override
-    public synchronized void run(){
+    public void run(){
         try {
             try(Socket s = st.accept()) {
                 //cist vstup servisniho vlakna a poskytnout odp. vystup
-                work=false;
+                synchronized(swf){
+                    swf.SetWork(false);
+                }
                 //notify?
             }
         } catch (IOException ex) {

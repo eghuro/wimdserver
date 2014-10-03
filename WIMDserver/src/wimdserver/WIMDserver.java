@@ -34,11 +34,19 @@ public class WIMDserver {
             threads = new LinkedList<>();
             
             try{
-                while(st.getWork()){
+                boolean work;
+                SynchronizedWorkFlag swf = SynchronizedWorkFlag.INSTANCE;
+                synchronized(swf){
+                    work=swf.GetWork();
+                }
+                while(work){
                     Socket sock = s.accept();
                     ProtocolThread pt = new ProtocolThread(sock);
                     threads.add(pt);
                     pt.start();
+                    synchronized(swf){
+                        work=swf.GetWork();
+                    }
                 }
                 try{
                     for(ProtocolThread pt:threads){
