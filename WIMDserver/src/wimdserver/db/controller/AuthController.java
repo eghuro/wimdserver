@@ -34,8 +34,6 @@ public class AuthController {
     }
     
     public boolean AuthenticateUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        //AuthDB.SaltRec sr = pwds.get(name);
-        //if(sr==null) return false;//spatne uid
         if(authDB.HasName(name)){
             String hashStored = authDB.GetHashForName(name);
             String salt = authDB.GetSaltForName(name);

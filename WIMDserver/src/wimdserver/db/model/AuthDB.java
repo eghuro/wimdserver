@@ -6,12 +6,6 @@
 
 package wimdserver.db.model;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
