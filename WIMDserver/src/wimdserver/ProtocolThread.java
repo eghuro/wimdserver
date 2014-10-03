@@ -8,18 +8,23 @@ package wimdserver;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class ProtocolThread extends Thread {
-    Socket socket;
+    final LinkedList<ProtocolThread> l;
+    Socket socket; 
     int id;
     static int cnt=0;
-    public ProtocolThread(Socket s){
+    public ProtocolThread(Socket s,LinkedList<ProtocolThread> l){
         this.socket=s;
         this.id=cnt++;
+        this.l=l;
     }
     
     @Override
@@ -32,6 +37,12 @@ public class ProtocolThread extends Thread {
             }
         }catch(IOException e){
             
+        }finally{
+            synchronized(l){
+                boolean r=l.remove(this);
+                if(!r) Logger.getLogger(ProtocolThread.class.getName()).log(Level.SEVERE,("ProtocolThread not in list: "+id));
+                l.notify();
+            }
         }
     }
     

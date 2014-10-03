@@ -32,7 +32,7 @@ public class WIMDserver {
             
             ServerSocket s = new ServerSocket(SSP);
             
-            LinkedList<ProtocolThread> threads;
+            final LinkedList<ProtocolThread> threads;
             threads = new LinkedList<>();
             
             try{
@@ -44,25 +44,27 @@ public class WIMDserver {
                 while(work){
                     if(threads.size()<MAXC){
                         Socket sock = s.accept();
-                        ProtocolThread pt = new ProtocolThread(sock);
+                        ProtocolThread pt;
+                        pt = new ProtocolThread(sock,threads);
                         threads.add(pt);
                         pt.start();
-                        synchronized(swf){
-                            work=swf.GetWork();
-                        }
                     } else{
                         //pockej dokud nejake spojeni nezhebne
+                        synchronized(threads){
+                            threads.wait();
+                        }
+                    }
+                    synchronized(swf){
+                        work=swf.GetWork();
                     }
                 }
-                try{
-                    for(ProtocolThread pt:threads){
+                for(ProtocolThread pt:threads){
                         pt.join();
-                    }
-                }catch(InterruptedException e){
+                }
+            }catch(InterruptedException e){
                     threads.stream().forEach((pt) -> {
                         pt.interrupt();
                     });
-                }
             } finally{
                 s.close();
                 st.interrupt();
