@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package wimdserver.db.model;
+package wimdserver.db.controller;
 
 /**
  *
@@ -12,12 +12,15 @@ package wimdserver.db.model;
  */
 public class SessionIDFactory{
     private SessionIDFactory(){
-
+        sid=0;
     }
 
     public static SessionIDFactory INSTANCE = new SessionIDFactory();
+    private int sid;
 
     public String GetSessionID(){
-        return "";
+        String newsid=Integer.toHexString(sid);
+        sid++;
+        return newsid;
     }
 }

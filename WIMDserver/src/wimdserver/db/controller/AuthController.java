@@ -14,7 +14,6 @@ import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Date;
 import wimdserver.db.model.AuthDB;
-import wimdserver.db.model.SessionIDFactory;
 
 /**
  *
