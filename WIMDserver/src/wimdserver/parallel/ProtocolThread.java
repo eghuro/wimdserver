@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package wimdserver;
+package wimdserver.parallel;
 
 import java.io.IOException;
 import java.net.Socket;
