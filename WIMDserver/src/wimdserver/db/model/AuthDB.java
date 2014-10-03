@@ -31,73 +31,41 @@ public class AuthDB {
         this.sessions = new ConcurrentHashMap<>();
     }
     
-    public void SetUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        SaltRec sr = saltNHashPwd(pwd);
-        pwds.put(name, sr);
+    public void SetUser(String name, String phash, String salt){
+        pwds.put(name,new SaltRec(phash,salt));
     }
     
-    public boolean AuthenticateUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+    public Boolean HasName(String name){
+        return pwds.containsKey(name);
+    }
+    
+    public String GetHashForName(String name){
         SaltRec sr = pwds.get(name);
-        if(sr==null) return false;//spatne uid
-        String salted = sr.salt+pwd;
-        byte[] hash = getHash(1024,salted);
-        return new String(hash,Charset.forName("UTF-8")).equals(sr.hash);
+        if(sr!=null)
+            return sr.hash;
+        else return null;
     }
     
-    public String GetSessionID(String name){
-        String SID=SessionIDFactory.INSTANCE.GetSessionID();//musi byt unikatni
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.HOUR, 3);//Session na 3 hodiny
-        sessions.put(SID,new SessionRec(name,c.getTime()));
-        return SID;
+    public String GetSaltForName(String name){
+        SaltRec sr = pwds.get(name);
+        if(sr!=null)
+            return sr.salt;
+        else return null;
     }
     
-    public boolean IsAuthenticated(String SID){
-        SessionRec sr = sessions.get(SID);
-        if(sr==null) return false;
-        if(sr.validity.after(new Date())) return true;
-        else{
-            sessions.remove(SID);
-            return false;
-        }
+    public void RegisterSID(String sid,String uid,Date validity){
+        sessions.put(sid,new SessionRec(uid,validity));
     }
     
-    private SaltRec saltNHashPwd(String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        //vygeneruji sul
-        //sul ma alespon 32 znaku
-        //sul dorovnava heslo na 128 znaku
-        
-        int length=(pwd.length()>128)?32:(128-pwd.length());
-        byte[] chain = new byte[length];
-        SecureRandom sr;
-        sr = new SecureRandom();
-        sr.nextBytes(chain);
-        String salt=convert(chain);//ASCII
-        String salted = salt+pwd;
-        byte[] hash = getHash(1024,salted);
-        String store = new String(hash,Charset.forName("UTF-8"));
-        SaltRec sar = new SaltRec(store,salt);
-        return sar;
+    public Date GetSessionValidity(String sid){
+        SessionRec sr=sessions.get(sid);
+        if(sr!=null)
+            return sr.validity;
+        else return null;
     }
     
-    private byte[] getHash(int iterationNb, String saltedPwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        MessageDigest digest = MessageDigest.getInstance("SHA-512");
-        digest.reset();
-        byte[] hash = digest.digest(saltedPwd.getBytes("UTF-8"));
-        for(int i=0;i<iterationNb;i++){
-            digest.reset();
-            hash = digest.digest(hash);
-        }
-        return hash;
-    }
-    
-    private String convert(byte[] b) throws IllegalArgumentException{
-        StringBuilder sb = new StringBuilder(b.length);
-        for(int i=0;i<b.length;i++){
-            if(b[i]<0) throw new IllegalArgumentException();
-            sb.append((char)b[i]);
-        }
-        return sb.toString();
+    public void DeregisterSID(String sid){
+        sessions.remove(sid);
     }
     
     private class SaltRec{
