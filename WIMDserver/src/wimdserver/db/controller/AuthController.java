@@ -97,12 +97,4 @@ public class AuthController {
         }
         return sb.toString();
     }
-    
-     private class SaltRec{
-        public String hash,salt;
-        public SaltRec(String hash,String salt){
-            this.hash=hash;
-            this.salt=salt;
-        }
-    }
 }
