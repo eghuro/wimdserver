@@ -31,9 +31,12 @@ public class AuthDB {
         pwds.put(name, sr);
     }
     
-    public boolean AuthenticateUser(String name,String pwd){
-        //SaltRec sr = pwds.
-        return false;
+    public boolean AuthenticateUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        SaltRec sr = pwds.get(name);
+        if(sr==null) return false;//spatne uid
+        String salted = sr.salt+pwd;
+        byte[] hash = getHash(1024,salted);
+        return new String(hash,Charset.forName("UTF-8")).equals(sr.hash);
     }
     
     private SaltRec saltNHashPwd(String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
