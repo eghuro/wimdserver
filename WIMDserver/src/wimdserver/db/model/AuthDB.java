@@ -55,7 +55,11 @@ public class AuthDB {
     public boolean IsAuthenticated(String SID){
         SessionRec sr = sessions.get(SID);
         if(sr==null) return false;
-        return (sr.validity.after(new Date()));
+        if(sr.validity.after(new Date())) return true;
+        else{
+            sessions.remove(SID);
+            return false;
+        }
     }
     
     private SaltRec saltNHashPwd(String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
@@ -65,7 +69,8 @@ public class AuthDB {
         
         int length=(pwd.length()>128)?32:(128-pwd.length());
         byte[] chain = new byte[length];
-        SecureRandom sr = SecureRandom.getInstance("");//TODO
+        SecureRandom sr;
+        sr = new SecureRandom();
         sr.nextBytes(chain);
         String salt=convert(chain);//ASCII
         String salted = salt+pwd;
