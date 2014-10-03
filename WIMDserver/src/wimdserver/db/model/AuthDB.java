@@ -11,19 +11,24 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * Dostane UID a PWD a rekne JO/NE
+ * TODO: prepsat na pouze hashmap + SetUser, Authenticate -> co dostane, to napise; zbytek to AuthControlleru
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class AuthDB {
-
+    
     private final ConcurrentHashMap<String,SaltRec> pwds;
+    private final ConcurrentHashMap<String,SessionRec> sessions;
     
     
     public AuthDB() {
         this.pwds = new ConcurrentHashMap<>();
+        this.sessions = new ConcurrentHashMap<>();
     }
     
     public void SetUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
@@ -37,6 +42,20 @@ public class AuthDB {
         String salted = sr.salt+pwd;
         byte[] hash = getHash(1024,salted);
         return new String(hash,Charset.forName("UTF-8")).equals(sr.hash);
+    }
+    
+    public String GetSessionID(String name){
+        String SID=SessionIDFactory.INSTANCE.GetSessionID();//musi byt unikatni
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.HOUR, 3);//Session na 3 hodiny
+        sessions.put(SID,new SessionRec(name,c.getTime()));
+        return SID;
+    }
+    
+    public boolean IsAuthenticated(String SID){
+        SessionRec sr = sessions.get(SID);
+        if(sr==null) return false;
+        return (sr.validity.after(new Date()));
     }
     
     private SaltRec saltNHashPwd(String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
@@ -81,6 +100,15 @@ public class AuthDB {
         public SaltRec(String hash,String salt){
             this.hash=hash;
             this.salt=salt;
+        }
+    }
+    
+    private class SessionRec{
+        public String UID;
+        public Date validity;
+        public SessionRec(String UID,Date validity){
+            this.UID=UID;
+            this.validity=validity;
         }
     }
 }
