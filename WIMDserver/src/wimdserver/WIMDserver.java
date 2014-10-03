@@ -18,17 +18,19 @@ import java.util.logging.Logger;
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class WIMDserver {
-    
+    static final int STP=1234;//service thread port
+    static final int SSP=6666;//server socket port
+    static final int MAXC = 5;//max connections
     
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         try {
-            ServiceThread st = new ServiceThread(1234);
+            ServiceThread st = new ServiceThread(STP);
             st.start();
             
-            ServerSocket s = new ServerSocket(6666);
+            ServerSocket s = new ServerSocket(SSP);
             
             LinkedList<ProtocolThread> threads;
             threads = new LinkedList<>();
@@ -40,12 +42,16 @@ public class WIMDserver {
                     work=swf.GetWork();
                 }
                 while(work){
-                    Socket sock = s.accept();
-                    ProtocolThread pt = new ProtocolThread(sock);
-                    threads.add(pt);
-                    pt.start();
-                    synchronized(swf){
-                        work=swf.GetWork();
+                    if(threads.size()<MAXC){
+                        Socket sock = s.accept();
+                        ProtocolThread pt = new ProtocolThread(sock);
+                        threads.add(pt);
+                        pt.start();
+                        synchronized(swf){
+                            work=swf.GetWork();
+                        }
+                    } else{
+                        //pockej dokud nejake spojeni nezhebne
                     }
                 }
                 try{
