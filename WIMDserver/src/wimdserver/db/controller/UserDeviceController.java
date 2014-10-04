@@ -28,4 +28,8 @@ public class UserDeviceController {
     public boolean SessionOwnsDevice(String SID,int DID){
         return UserOwnsDevice(ac.GetSessionID(SID),DID);
     }
+    
+    public void SetRecord(String UID,int DID){
+        uddb.SetRecord(DID, UID);
+    }
 }

@@ -26,7 +26,7 @@ public class RecordController {
         this.otpf = OTPFactory.INSTANCE;
     }
     
-    public String SetRecord(int DID,String OTP,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException, Exception{
+    public String SetRecord(int DID,String OTP,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException, PasswordException{
         //Potreba pouzit session id - je spojeno s danym DID? TODO
         //TODO prvotni ziskani OTP
         if(drdb.HasRecordForDID(DID)){
@@ -36,7 +36,7 @@ public class RecordController {
             byte[] hash = Hasher.getHash(1024, saltedOTP);
             if(new String(hash,Charset.forName("UTF-8")).equals(storedHash)){
                 return setRec(DID,coord,received);
-            }else throw new Exception();//TODO spatne OTP
+            }else throw new PasswordException();//TODO spatne OTP          
         } else{
             return setRec(DID,coord,received);
         }
