@@ -19,9 +19,11 @@ import wimdserver.db.model.DeviceRecordDB;
 public class RecordController {
     
     private final DeviceRecordDB drdb;
+    private final OTPFactory otpf;
     
     public RecordController(DeviceRecordDB drdb){
         this.drdb=drdb;
+        this.otpf = OTPFactory.INSTANCE;
     }
     
     public String SetRecord(int DID,String OTP,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException, Exception{
@@ -41,7 +43,7 @@ public class RecordController {
     }
     
     private String setRec(int DID,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        String newOTP="";//TODO
+        String newOTP=otpf.GetNewOTP();//TODO
         String newSalt=Hasher.saltPwd(newOTP);
         String newSaltedOTP=newSalt+newOTP;
         byte[] newHash=Hasher.getHash(1024,newSaltedOTP);
