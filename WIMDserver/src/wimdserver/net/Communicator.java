@@ -21,18 +21,22 @@ public class Communicator {
     Socket socket;
     BufferedReader in;
     PrintWriter out;
+    Parser parser;
     
     public Communicator(Socket s) throws IOException{
         this.socket=s;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
+        this.parser = new Parser();
     }
     
-    public void communicate() throws IOException{
-        boolean work=true;
-        while(work){
-            String str = in.readLine();
-            
+    public synchronized void communicate() throws IOException{
+        synchronized(parser){
+            while(parser.work()){
+                String str = parser.parse(in.readLine());
+                if(str!=null)
+                    out.write(str);
+            }
         }
     }
 }
