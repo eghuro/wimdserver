@@ -13,18 +13,19 @@ import java.util.HashMap;
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class UserDeviceDB {
+    //mapuji DID na UID - pro kazdy DID existuje prave jedno UID
     
-    private final HashMap<String,Integer> SID2DID;
+    private final HashMap<Integer,String> DIDUID;
     
     public UserDeviceDB(){
-        this.SID2DID=new HashMap<>();
+        this.DIDUID=new HashMap<>();
     }
     
-    public int GetDID(String SID){
-        return SID2DID.get(SID);
+    public String GetUID(int DID){
+        return DIDUID.get(DID);
     }
     
-    public void SetRecord(String SID,int DID){
-        SID2DID.put(SID, DID);
+    public void SetRecord(int DID,String UID){
+        this.DIDUID.put(DID, UID);
     }
 }
