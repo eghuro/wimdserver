@@ -57,4 +57,8 @@ public class AuthController {
             return false;
         }
     }
+    
+    public String GetUID(String SID){
+        return authDB.GetUID(SID);
+    }
 }

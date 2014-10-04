@@ -62,6 +62,15 @@ public class AuthDB {
         sessions.remove(sid);
     }
     
+    public String GetUID(String SID){
+        if(sessions.containsKey(SID)){
+            SessionRec sr=sessions.get(SID);
+            if(sr!=null)
+                return sr.UID;
+            else return null;
+        }else return null;
+    }
+    
     private class SaltRec{
         public String hash,salt;
         public SaltRec(String hash,String salt){
