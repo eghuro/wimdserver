@@ -40,7 +40,13 @@ public class RecordController {
                 drdb.SetRecord(DID, new String(newHash,Charset.forName("UTF-8")), newSalt, coord, received);
                 return newOTP;
             }else throw new Exception();//TODO spatne OTP
+        } else{
+            String newOTP="";
+            String newSalt=Hasher.saltPwd(newOTP);
+            String saltedOTP = newSalt+newOTP;
+            byte[] newHash = Hasher.getHash(1024, saltedOTP);
+            drdb.SetRecord(DID, new String(newHash,Charset.forName("UTF-8")), newSalt, coord, received);
+            return newOTP;
         }
-        return null;
     }
 }
