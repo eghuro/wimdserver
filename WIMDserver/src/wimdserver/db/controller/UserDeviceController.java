@@ -21,15 +21,15 @@ public class UserDeviceController {
         this.ac=ac;
     }
     
-    public boolean UserOwnsDevice(String UID,int DID){
-        return uddb.GetUID(DID).equals(UID);
+    public boolean userOwnsDevice(String UID,int DID){
+        return uddb.getUID(DID).equals(UID);
     }
     
-    public boolean SessionOwnsDevice(String SID,int DID){
-        return UserOwnsDevice(ac.GetSessionID(SID),DID);
+    public boolean sessionOwnsDevice(String SID,int DID){
+        return userOwnsDevice(ac.getSessionID(SID),DID);
     }
     
-    public void SetRecord(String UID,int DID){
-        uddb.SetRecord(DID, UID);
+    public void setRecord(String UID,int DID){
+        uddb.setRecord(DID, UID);
     }
 }

@@ -18,7 +18,7 @@ public class SessionIDFactory{
     public static SessionIDFactory INSTANCE = new SessionIDFactory();
     private int sid;
 
-    public String GetSessionID(){
+    public String getSessionID(){
         String newsid=Integer.toHexString(sid);//pracuje s unsigned -> po preteceni na ++ pokracuje dal
         sid++;
         return newsid;

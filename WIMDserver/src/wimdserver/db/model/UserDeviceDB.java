@@ -21,11 +21,11 @@ public class UserDeviceDB {
         this.DIDUID=new HashMap<>();
     }
     
-    public String GetUID(int DID){
+    public String getUID(int DID){
         return DIDUID.get(DID);
     }
     
-    public void SetRecord(int DID,String UID){
+    public void setRecord(int DID,String UID){
         this.DIDUID.put(DID, UID);
     }
 }

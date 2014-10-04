@@ -26,12 +26,12 @@ public class RecordController {
         this.otpf = OTPFactory.INSTANCE;
     }
     
-    public String SetRecord(int DID,String OTP,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException, PasswordException{
+    public String setRecord(int DID,String OTP,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException, PasswordException{
         //Potreba pouzit session id - je spojeno s danym DID? TODO
         //TODO prvotni ziskani OTP
-        if(drdb.HasRecordForDID(DID)){
-            String storedHash = drdb.GetOTPHash(DID);
-            String storedSalt = drdb.GetSalt(DID);
+        if(drdb.hasRecordForDID(DID)){
+            String storedHash = drdb.getOTPHash(DID);
+            String storedSalt = drdb.getSalt(DID);
             String saltedOTP = storedSalt+OTP;
             byte[] hash = Hasher.getHash(1024, saltedOTP);
             if(new String(hash,Charset.forName("UTF-8")).equals(storedHash)){
@@ -43,11 +43,11 @@ public class RecordController {
     }
     
     private String setRec(int DID,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        String newOTP=otpf.GetNewOTP();//TODO
+        String newOTP=otpf.getNewOTP();//TODO
         String newSalt=Hasher.saltPwd(newOTP);
         String newSaltedOTP=newSalt+newOTP;
         byte[] newHash=Hasher.getHash(1024,newSaltedOTP);
-        drdb.SetRecord(DID, new String(newHash,Charset.forName("UTF-8")), newSalt, coord, received);
+        drdb.setRecord(DID, new String(newHash,Charset.forName("UTF-8")), newSalt, coord, received);
         return newOTP;
     }
 }

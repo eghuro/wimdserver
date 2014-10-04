@@ -35,21 +35,21 @@ public class DatabaseController {
         }
     }
     
-    public NewDeviceReturnRecord NewDevice(String UID,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        if(ac.AuthenticateUser(UID, pwd)){
-            String SID = ac.GetSessionID(UID);
+    public NewDeviceReturnRecord newDevice(String UID,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        if(ac.authenticateUser(UID, pwd)){
+            String SID = ac.getSessionID(UID);
             int DID=-1;//generate DID
-            udc.SetRecord(UID, DID);
+            udc.setRecord(UID, DID);
             String OTP=null;//generate initial OTP
             return new NewDeviceReturnRecord(DID,OTP,SID);
         }else return null;
     }
     
-    public String NewRecord(String SID,int did,String OTP,String coord) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        if(ac.IsAuthenticated(SID)){
-            if(udc.SessionOwnsDevice(SID, did)){
+    public String newRecord(String SID,int did,String OTP,String coord) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        if(ac.isAuthenticated(SID)){
+            if(udc.sessionOwnsDevice(SID, did)){
                 try{
-                    return rc.SetRecord(did, OTP, coord, new Date());
+                    return rc.setRecord(did, OTP, coord, new Date());
                 }catch(PasswordException pe){
                     return null;
                 }

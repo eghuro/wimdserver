@@ -23,42 +23,42 @@ public class AuthController {
     public AuthController(){
         authDB=new AuthDB();
     }
-    public void SetUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+    public void setUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
         String salt = Hasher.saltPwd(pwd);
         String saltPwd = salt+pwd;
         String hash = Hasher.hashPwd(saltPwd);
-        authDB.SetUser(name, hash, salt);
+        authDB.setUser(name, hash, salt);
     }
     
-    public boolean AuthenticateUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        if(authDB.HasName(name)){
-            String hashStored = authDB.GetHashForName(name);
-            String salt = authDB.GetSaltForName(name);
+    public boolean authenticateUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        if(authDB.hasName(name)){
+            String hashStored = authDB.getHashForName(name);
+            String salt = authDB.getSaltForName(name);
             String salted = salt+pwd;
             byte[] hash = Hasher.getHash(1024,salted);
             return new String(hash,Charset.forName("UTF-8")).equals(hashStored);
         }else return false;
     }
     
-    public String GetSessionID(String name){
-        String SID=SessionIDFactory.INSTANCE.GetSessionID();//musi byt unikatni
+    public String getSessionID(String name){
+        String SID=SessionIDFactory.INSTANCE.getSessionID();//musi byt unikatni
         Calendar c = Calendar.getInstance();
         c.add(Calendar.HOUR, 3);//Session na 3 hodiny
-        authDB.RegisterSID(SID, name, c.getTime());
+        authDB.registerSID(SID, name, c.getTime());
         return SID;
     }
     
-    public boolean IsAuthenticated(String SID){
-        Date validity = authDB.GetSessionValidity(SID);
+    public boolean isAuthenticated(String SID){
+        Date validity = authDB.getSessionValidity(SID);
         if(validity==null) return false;
         if(validity.after(new Date())) return true;
         else{
-            authDB.DeregisterSID(SID);
+            authDB.deregisterSID(SID);
             return false;
         }
     }
     
-    public String GetUID(String SID){
-        return authDB.GetUID(SID);
+    public String getUID(String SID){
+        return authDB.getUID(SID);
     }
 }

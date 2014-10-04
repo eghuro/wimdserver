@@ -16,7 +16,7 @@ public class OTPFactory {
     }
     public static final OTPFactory INSTANCE = new OTPFactory();
     
-    public String GetNewOTP(){
+    public String getNewOTP(){
         return null;
     }
 }

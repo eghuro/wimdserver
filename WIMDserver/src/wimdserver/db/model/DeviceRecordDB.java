@@ -32,7 +32,7 @@ public class DeviceRecordDB {
         recs=new ConcurrentHashMap<>();
     }
     
-    public void SetRecord(int did,String OTPhash,String salt,String coord,Date received){
+    public void setRecord(int did,String OTPhash,String salt,String coord,Date received){
         //ulozit jen hash OTP
         DeviceRecord dr = new DeviceRecord(OTPhash,salt,coord,received);
         
@@ -46,15 +46,15 @@ public class DeviceRecordDB {
         }
     }
     
-    public String GetOTPHash(int did){
+    public String getOTPHash(int did){
         return recs.get(did).get(0).otp;
     }
     
-    public String GetSalt(int did){
+    public String getSalt(int did){
         return recs.get(did).get(0).salt;
     }
     
-    public boolean HasRecordForDID(int did){
+    public boolean hasRecordForDID(int did){
         return recs.containsKey(did);
     }
 }

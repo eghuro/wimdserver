@@ -25,44 +25,44 @@ public class AuthDB {
         this.sessions = new ConcurrentHashMap<>();
     }
     
-    public void SetUser(String name, String phash, String salt){
+    public void setUser(String name, String phash, String salt){
         pwds.put(name,new SaltRec(phash,salt));
     }
     
-    public Boolean HasName(String name){
+    public Boolean hasName(String name){
         return pwds.containsKey(name);
     }
     
-    public String GetHashForName(String name){
+    public String getHashForName(String name){
         SaltRec sr = pwds.get(name);
         if(sr!=null)
             return sr.hash;
         else return null;
     }
     
-    public String GetSaltForName(String name){
+    public String getSaltForName(String name){
         SaltRec sr = pwds.get(name);
         if(sr!=null)
             return sr.salt;
         else return null;
     }
     
-    public void RegisterSID(String sid,String uid,Date validity){
+    public void registerSID(String sid,String uid,Date validity){
         sessions.put(sid,new SessionRec(uid,validity));
     }
     
-    public Date GetSessionValidity(String sid){
+    public Date getSessionValidity(String sid){
         SessionRec sr=sessions.get(sid);
         if(sr!=null)
             return sr.validity;
         else return null;
     }
     
-    public void DeregisterSID(String sid){
+    public void deregisterSID(String sid){
         sessions.remove(sid);
     }
     
-    public String GetUID(String SID){
+    public String getUID(String SID){
         if(sessions.containsKey(SID)){
             SessionRec sr=sessions.get(SID);
             if(sr!=null)
