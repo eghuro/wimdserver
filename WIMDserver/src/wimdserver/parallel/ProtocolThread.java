@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wimdserver.net.Communicator;
 
 /**
  *
@@ -31,7 +32,8 @@ public class ProtocolThread extends Thread {
     public void run(){
         try{
             try{
-                
+                Communicator c = new Communicator(socket);
+                c.communicate();
             }finally{
                     socket.close();
             }
