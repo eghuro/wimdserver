@@ -35,25 +35,35 @@ public class DatabaseController {
         }
     }
     
-    public NewDeviceReturnRecord newDevice(String UID,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        if(ac.authenticateUser(UID, pwd)){
-            String SID = ac.getSessionID(UID);
-            int DID=-1;//generate DID
-            udc.setRecord(UID, DID);
-            String OTP=null;//generate initial OTP
-            return new NewDeviceReturnRecord(DID,OTP,SID);
-        }else return null;
+    public synchronized NewDeviceReturnRecord newDevice(String UID,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        synchronized(ac){
+            if(ac.authenticateUser(UID, pwd)){
+                String SID = ac.getSessionID(UID);
+                int DID=-1;//generate DID
+                synchronized(udc){
+                    udc.setRecord(UID, DID);
+                }
+                String OTP=null;//generate initial OTP
+                return new NewDeviceReturnRecord(DID,OTP,SID);
+            }else return null;
+        }
     }
     
-    public String newRecord(String SID,int did,String OTP,String coord) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        if(ac.isAuthenticated(SID)){
-            if(udc.sessionOwnsDevice(SID, did)){
-                try{
-                    return rc.setRecord(did, OTP, coord, new Date());
-                }catch(PasswordException pe){
-                    return null;
+    public synchronized String newRecord(String SID,int did,String OTP,String coord) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        synchronized(ac){
+            if(ac.isAuthenticated(SID)){
+                synchronized(udc){
+                    if(udc.sessionOwnsDevice(SID, did)){
+                        try{
+                            synchronized(rc){
+                                return rc.setRecord(did, OTP, coord, new Date());
+                            }
+                        }catch(PasswordException pe){
+                            return null;
+                        }
+                    } else return null;
                 }
             } else return null;
-        } else return null;
+        }
     }
 }

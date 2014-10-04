@@ -15,10 +15,10 @@ public class SessionIDFactory{
         sid=0;
     }
 
-    public static SessionIDFactory INSTANCE = new SessionIDFactory();
+    public static final SessionIDFactory INSTANCE = new SessionIDFactory();
     private int sid;
 
-    public String getSessionID(){
+    public synchronized String getSessionID(){
         String newsid=Integer.toHexString(sid);//pracuje s unsigned -> po preteceni na ++ pokracuje dal
         sid++;
         return newsid;

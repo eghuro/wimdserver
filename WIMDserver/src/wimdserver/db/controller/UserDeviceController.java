@@ -21,15 +21,21 @@ public class UserDeviceController {
         this.ac=ac;
     }
     
-    public boolean userOwnsDevice(String UID,int DID){
-        return uddb.getUID(DID).equals(UID);
+    public synchronized boolean userOwnsDevice(String UID,int DID){
+        synchronized (uddb){
+            return uddb.getUID(DID).equals(UID);
+        }
     }
     
-    public boolean sessionOwnsDevice(String SID,int DID){
-        return userOwnsDevice(ac.getSessionID(SID),DID);
+    public synchronized boolean sessionOwnsDevice(String SID,int DID){
+        synchronized(ac){
+            return userOwnsDevice(ac.getSessionID(SID),DID);
+        }
     }
     
-    public void setRecord(String UID,int DID){
-        uddb.setRecord(DID, UID);
+    public synchronized void setRecord(String UID,int DID){
+        synchronized(uddb){
+            uddb.setRecord(DID, UID);
+        }
     }
 }
