@@ -33,20 +33,19 @@ public class RecordController {
             String saltedOTP = storedSalt+OTP;
             byte[] hash = Hasher.getHash(1024, saltedOTP);
             if(new String(hash,Charset.forName("UTF-8")).equals(storedHash)){
-                String newOTP="";//TODO
-                String newSalt=Hasher.saltPwd(newOTP);
-                String newSaltedOTP=newSalt+newOTP;
-                byte[] newHash=Hasher.getHash(1024,newSaltedOTP);
-                drdb.SetRecord(DID, new String(newHash,Charset.forName("UTF-8")), newSalt, coord, received);
-                return newOTP;
+                return setRec(DID,coord,received);
             }else throw new Exception();//TODO spatne OTP
         } else{
-            String newOTP="";
-            String newSalt=Hasher.saltPwd(newOTP);
-            String saltedOTP = newSalt+newOTP;
-            byte[] newHash = Hasher.getHash(1024, saltedOTP);
-            drdb.SetRecord(DID, new String(newHash,Charset.forName("UTF-8")), newSalt, coord, received);
-            return newOTP;
+            return setRec(DID,coord,received);
         }
+    }
+    
+    private String setRec(int DID,String coord,Date received) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        String newOTP="";//TODO
+        String newSalt=Hasher.saltPwd(newOTP);
+        String newSaltedOTP=newSalt+newOTP;
+        byte[] newHash=Hasher.getHash(1024,newSaltedOTP);
+        drdb.SetRecord(DID, new String(newHash,Charset.forName("UTF-8")), newSalt, coord, received);
+        return newOTP;
     }
 }
