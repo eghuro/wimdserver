@@ -18,10 +18,10 @@ import java.net.Socket;
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class Communicator {
-    Socket socket;
-    BufferedReader in;
-    PrintWriter out;
-    Parser parser;
+    final Socket socket;
+    final BufferedReader in;
+    final PrintWriter out;
+    final Parser parser;
     
     public Communicator(Socket s) throws IOException{
         this.socket=s;
@@ -31,12 +31,10 @@ public class Communicator {
     }
     
     public synchronized void communicate() throws IOException{
-        synchronized(parser){
-            while(parser.work()){
-                String str = parser.parse(in.readLine());
-                if(str!=null)
-                    out.write(str);
-            }
+        while(parser.work()){
+            String str = parser.parse(in.readLine());
+            if(str!=null)
+                out.write(str);
         }
     }
 }

@@ -27,50 +27,38 @@ public class AuthController {
         String salt = Hasher.saltPwd(pwd);
         String saltPwd = salt+pwd;
         String hash = Hasher.hashPwd(saltPwd);
-        synchronized(authDB){
-            authDB.setUser(name, hash, salt);
-        }
+        authDB.setUser(name, hash, salt);
     }
     
     public synchronized boolean authenticateUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
-        synchronized(authDB){
-            if(authDB.hasName(name)){
-                String hashStored = authDB.getHashForName(name);
-                String salt = authDB.getSaltForName(name);
-                String salted = salt+pwd;
-                byte[] hash = Hasher.getHash(1024,salted);
-                return new String(hash,Charset.forName("UTF-8")).equals(hashStored);
-            }else return false;
-        }
+        if(authDB.hasName(name)){
+            String hashStored = authDB.getHashForName(name);
+            String salt = authDB.getSaltForName(name);
+            String salted = salt+pwd;
+            byte[] hash = Hasher.getHash(1024,salted);
+            return new String(hash,Charset.forName("UTF-8")).equals(hashStored);
+        }else return false;
     }
     
     public synchronized String getSessionID(String name){
-        synchronized(SessionIDFactory.INSTANCE){
-            String SID=SessionIDFactory.INSTANCE.getSessionID();//musi byt unikatni
-            Calendar c = Calendar.getInstance();
-            c.add(Calendar.HOUR, 3);//Session na 3 hodiny
-            synchronized(authDB){
-                authDB.registerSID(SID, name, c.getTime());
-            }
-            return SID;
-        }
+        String SID=SessionIDFactory.INSTANCE.getSessionID();//musi byt unikatni
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.HOUR, 3);//Session na 3 hodiny
+        authDB.registerSID(SID, name, c.getTime());
+        return SID;
     }
     
     public synchronized boolean isAuthenticated(String SID){
-        synchronized(authDB){
-            Date validity = authDB.getSessionValidity(SID);
-            if(validity==null) return false;
-            if(validity.after(new Date())) return true;
-            else{
-                authDB.deregisterSID(SID);
-                return false;
-            }
+        Date validity = authDB.getSessionValidity(SID);
+        if(validity==null) return false;
+        if(validity.after(new Date())) return true;
+        else{
+            authDB.deregisterSID(SID);
+            return false;
         }
     }
     
     public synchronized String getUID(String SID){
-        synchronized(authDB){
-            return authDB.getUID(SID);
-        }
+        return authDB.getUID(SID);
     }
 }

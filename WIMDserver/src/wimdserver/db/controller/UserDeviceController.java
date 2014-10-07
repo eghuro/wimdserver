@@ -22,20 +22,14 @@ public class UserDeviceController {
     }
     
     public synchronized boolean userOwnsDevice(String UID,int DID){
-        synchronized (uddb){
-            return uddb.getUID(DID).equals(UID);
-        }
+        return uddb.getUID(DID).equals(UID);
     }
     
     public synchronized boolean sessionOwnsDevice(String SID,int DID){
-        synchronized(ac){
-            return userOwnsDevice(ac.getSessionID(SID),DID);
-        }
+        return userOwnsDevice(ac.getSessionID(SID),DID);
     }
     
     public synchronized void setRecord(String UID,int DID){
-        synchronized(uddb){
-            uddb.setRecord(DID, UID);
-        }
+        uddb.setRecord(DID, UID);
     }
 }

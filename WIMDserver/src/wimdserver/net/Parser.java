@@ -15,10 +15,10 @@ public class Parser {
     public Parser(){
         work=true;
     }
-    public String parse(String s){
+    public synchronized String parse(String s){
         return "";
     }
-    public boolean work(){
+    public synchronized boolean work(){
         return work;
     }
 }
