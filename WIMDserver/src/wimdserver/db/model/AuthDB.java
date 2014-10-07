@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Dostane UID a PWD a rekne JO/NE
- * TODO: prepsat na pouze hashmap + SetUser, Authenticate -> co dostane, to napise; zbytek to AuthControlleru
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class AuthDB {

@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.CharBuffer;
 
 /**
  *
@@ -30,11 +31,29 @@ public class Communicator {
         this.parser = new Parser();
     }
     
-    public synchronized void communicate() throws IOException{
-        while(parser.work()){
-            String str = parser.parse(in.readLine());
-            if(str!=null)
-                out.write(str);
+    public synchronized void communicate() throws IOException,UnsupportedOperationException{//TODO
+        boolean work=true;
+        CharBuffer cb=null;//TODO
+        while(work){
+            char c = (char)in.read();
+            if(c!=' ')
+                cb.put(c);
+            else{
+                ParseResult pr = parser.parse(cb.position(0).toString());
+                work = !pr.equals(ParseResult.STOP);
+                switch(pr){
+                    case PARSE:break;
+                    case RESULT:
+                        String res = parser.getResult();
+                        if(res!=null)
+                            out.write(res);
+                        break;
+                    case STOP:
+                        work=false;
+                        break;
+                    default: throw new UnsupportedOperationException(pr.name());//TODO
+                }
+            }
         }
     }
 }

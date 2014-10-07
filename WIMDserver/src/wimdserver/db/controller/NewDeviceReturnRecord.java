@@ -3,22 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package wimdserver.net;
+package wimdserver.db.controller;
 
 /**
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class Parser {
-    String result;
-    public Parser(){
-        
-    }
-    public synchronized ParseResult parse(String s){
-        return null;
-    }
-    public synchronized String getResult(){
-        return result;
+public class NewDeviceReturnRecord {
+     public int DID;
+    public String OTP,SID;
+    public NewDeviceReturnRecord(int DID,String OTP,String SID){
+        this.DID=DID;
+        this.OTP=OTP;
+        this.SID=SID;
     }
 }

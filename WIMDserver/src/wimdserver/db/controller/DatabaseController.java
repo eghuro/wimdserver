@@ -25,16 +25,6 @@ public class DatabaseController {
         this.udc=udc;
     }
     
-    public class NewDeviceReturnRecord{
-        public int DID;
-        public String OTP,SID;
-        public NewDeviceReturnRecord(int DID,String OTP,String SID){
-            this.DID=DID;
-            this.OTP=OTP;
-            this.SID=SID;
-        }
-    }
-    
     public synchronized NewDeviceReturnRecord newDevice(String UID,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
         if(ac.authenticateUser(UID, pwd)){
             String SID = ac.getSessionID(UID);
