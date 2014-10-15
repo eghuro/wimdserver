@@ -12,7 +12,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.CharBuffer;
+import wimdserver.db.controller.AuthController;
+import wimdserver.db.controller.DatabaseController;
+import wimdserver.db.controller.RecordController;
+import wimdserver.db.controller.UserDeviceController;
+import wimdserver.db.model.AuthDB;
+import wimdserver.db.model.DeviceRecordDB;
+import wimdserver.db.model.UserDeviceDB;
 
 /**
  *
@@ -23,23 +29,27 @@ public class Communicator {
     final BufferedReader in;
     final PrintWriter out;
     final Parser parser;
+    final DatabaseController dc;
     
     public Communicator(Socket s) throws IOException{
         this.socket=s;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
-        this.parser = new Parser();
+        AuthController ac;
+        ac = new AuthController(new AuthDB());
+        this.dc=new DatabaseController(ac,new RecordController(new DeviceRecordDB()),new UserDeviceController(new UserDeviceDB(),ac));
+        this.parser = new Parser(dc);
     }
     
-    public synchronized void communicate() throws IOException,UnsupportedOperationException{//TODO
+    public synchronized void communicate() throws IOException,UnsupportedOperationException{
         boolean work=true;
-        CharBuffer cb=null;//TODO
+        StringBuilder sb=new StringBuilder();
         while(work){
             char c = (char)in.read();
             if(c!=' ')
-                cb.put(c);
+                sb.append(c);
             else{
-                ParseResult pr = parser.parse(cb.position(0).toString());
+                ParseResult pr = parser.parse(sb.toString());
                 work = !pr.equals(ParseResult.STOP);
                 switch(pr){
                     case PARSE:break;
@@ -51,7 +61,7 @@ public class Communicator {
                     case STOP:
                         work=false;
                         break;
-                    default: throw new UnsupportedOperationException(pr.name());//TODO
+                    default: throw new UnsupportedOperationException(pr.name());
                 }
             }
         }

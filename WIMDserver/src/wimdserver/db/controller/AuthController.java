@@ -20,8 +20,8 @@ import wimdserver.db.model.AuthDB;
 public class AuthController {
     
     private final AuthDB authDB;
-    public AuthController(){
-        authDB=new AuthDB();
+    public AuthController(AuthDB authDB){
+        this.authDB=authDB;
     }
     public synchronized void setUser(String name,String pwd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
         String salt = Hasher.saltPwd(pwd);
