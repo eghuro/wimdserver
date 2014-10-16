@@ -25,6 +25,7 @@ public class Parser {
     final String AUTH="AUTH";
     final String REC="REC";
     final String DEV="DEV";
+    final String BYE="BYE";
     
     final String SID="SID";
     final String OTP="OTP";
@@ -61,6 +62,8 @@ public class Parser {
                     case DEV:
                         state=State.DEV;
                         return ParseResult.PARSE;
+                    case BYE:
+                        return ParseResult.STOP;
                     default:
                         state=State.START;
                         result=FAIL;
