@@ -9,12 +9,31 @@ package wimdserver.db.model;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
+import wimdserver.db.sync.DBRecord;
+import wimdserver.db.sync.ISynchronizable;
 
 /**
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class DeviceRecordDB {
+public class DeviceRecordDB implements ISynchronizable {
+
+    @Override
+    public DBRecord[] export() {
+        DBRecord[] dbr = new DBRecord[recs.size()];
+        int i=0;
+        for(Entry<Integer, LinkedList<DeviceRecord>> e:recs.entrySet()){
+            
+            
+        }
+        return dbr;
+    }
+
+    @Override
+    public void load(DBRecord[] data) {
+        
+    }
     private class DeviceRecord{
         public String otp,salt,coord;
         public Date received;
