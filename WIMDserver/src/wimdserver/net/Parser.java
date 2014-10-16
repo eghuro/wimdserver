@@ -10,8 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import wimdserver.db.controller.DatabaseController;
 import wimdserver.db.controller.NewDeviceReturnRecord;
 
