@@ -7,13 +7,16 @@
 package wimdserver.db.model;
 
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import wimdserver.db.sync.DBRecord;
+import wimdserver.db.sync.ISynchronizable;
 
 /**
  * Dostane UID a PWD a rekne JO/NE
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class AuthDB {
+public class AuthDB implements ISynchronizable {
     
     private final ConcurrentHashMap<String,SaltRec> pwds;
     private final ConcurrentHashMap<String,SessionRec> sessions;
@@ -68,6 +71,40 @@ public class AuthDB {
                 return sr.UID;
             else return null;
         }else return null;
+    }
+
+    @Override
+    public DBRecord[] export() {
+        DBRecord[] db = new DBRecord[pwds.size()*2];
+        int i=0;
+        for(Entry<String,SaltRec> e:pwds.entrySet()){
+            db[i]=new DBRecord("authHashes",e.getKey(),e.getValue().hash);
+            db[i+1] = new DBRecord("authSalts",e.getKey(),e.getValue().salt);
+            i=i+2;
+        }
+        return db;
+    }
+
+    @Override
+    public void load(DBRecord[] data) {
+        for(DBRecord d:data){
+            SaltRec sr;
+            if(pwds.containsKey(d.getName())){
+                sr=pwds.get(d.getName());
+                pwds.remove(d.getName());
+            }else{
+                sr = new SaltRec(null,null);
+            }
+            switch (d.getTable()) {
+                case "authHashes":
+                    sr.hash=d.getValue();
+                    break;
+                case "authSalts":
+                    sr.salt=d.getValue();
+                    break;
+            }
+            pwds.put(d.getName(), sr);
+        }
     }
     
     private class SaltRec{
