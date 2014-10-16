@@ -18,14 +18,9 @@ import wimdserver.net.Communicator;
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class ProtocolThread extends Thread {
-    final LinkedList<ProtocolThread> l;
-    Socket socket; 
-    int id;
-    static int cnt=0;
-    public ProtocolThread(Socket s,LinkedList<ProtocolThread> l){
+    Socket socket;
+    public ProtocolThread(Socket s){
         this.socket=s;
-        this.id=cnt++;
-        this.l=l;
     }
     
     @Override
@@ -40,10 +35,9 @@ public class ProtocolThread extends Thread {
         }catch(IOException | UnsupportedOperationException e){
             Logger.getLogger(ProtocolThread.class.getName()).log(Level.SEVERE, "Caught exception: {0}", e.getMessage());
         }finally{
-            synchronized(l){
-                boolean r=l.remove(this);
-                if(!r) Logger.getLogger(ProtocolThread.class.getName()).log(Level.SEVERE,("ProtocolThread not in list: "+id));
-                l.notify();
+            ThreadManager TM = ThreadManager.TM;
+            synchronized(TM){
+                TM.Remove(this);
             }
         }
     }

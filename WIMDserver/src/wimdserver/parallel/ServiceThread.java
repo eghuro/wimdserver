@@ -32,6 +32,10 @@ public class ServiceThread  extends Thread{
                 synchronized(swf){
                     swf.SetWork(false);
                 }
+                ThreadManager TM = ThreadManager.TM;
+                synchronized(TM){
+                    TM.Stop();
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(ServiceThread.class.getName()).log(Level.SEVERE, null, ex);

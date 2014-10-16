@@ -9,7 +9,6 @@ package wimdserver.parallel;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
 public class WIMDserver {
     static final int STP=1234;//service thread port
     static final int SSP=6666;//server socket port
-    static final int MAXC = 5;//max connections
     
     /**
      * @param args the command line arguments
@@ -30,43 +28,45 @@ public class WIMDserver {
             ServiceThread st = new ServiceThread(STP);
             st.start();
             
-            ServerSocket s = new ServerSocket(SSP);
-            
-            final LinkedList<ProtocolThread> threads;
-            threads = new LinkedList<>();
-            
-            try{
+            try(ServerSocket s = new ServerSocket(SSP)) {
                 boolean work;
                 SynchronizedWorkFlag swf = SynchronizedWorkFlag.INSTANCE;
                 synchronized(swf){
                     work=swf.GetWork();
                 }
+                
+                ThreadManager tm = ThreadManager.TM;
+                
                 while(work){
-                    if(threads.size()<MAXC){
-                        Socket sock = s.accept();
-                        ProtocolThread pt;
-                        pt = new ProtocolThread(sock,threads);
-                        threads.add(pt);
-                        pt.start();
-                    } else{
-                        //pockej dokud nejake spojeni nezhebne
-                        synchronized(threads){
-                            threads.wait();
+                    Socket sock = s.accept();
+                    
+                    synchronized(tm){
+                        if(tm.GetAvailable()){
+                            tm.New(sock);
+                        }else{
+                            try {
+                                tm.wait();//ThreadManager available
+                                
+                                synchronized(swf){//overit, zda mezitim nedoslo ke zmene swf
+                                    work=swf.GetWork();
+                                }
+                                
+                                if(work){
+                                    tm.New(sock);//pouze pokud je i zde volno, otevri spojeni
+                                }
+                            } catch (InterruptedException ex) {
+                                tm.ForceStop();
+                                Logger.getLogger(WIMDserver.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
+                    
                     synchronized(swf){
                         work=swf.GetWork();
                     }
                 }
-                for(ProtocolThread pt:threads){
-                        pt.join();
-                }
-            }catch(InterruptedException e){
-                    threads.stream().forEach((pt) -> {
-                        pt.interrupt();
-                    });
-            } finally{
-                s.close();
+                
+            }finally{
                 st.interrupt();
             }
         } catch (IOException ex) {
