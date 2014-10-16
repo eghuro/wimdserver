@@ -8,7 +8,6 @@ package wimdserver.parallel;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import wimdserver.net.Communicator;
@@ -34,6 +33,13 @@ public class ProtocolThread extends Thread {
             }
         }catch(IOException | UnsupportedOperationException e){
             Logger.getLogger(ProtocolThread.class.getName()).log(Level.SEVERE, "Caught exception: {0}", e.getMessage());
+        }catch(InterruptedException e){
+            try {
+                socket.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ProtocolThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            this.interrupt();
         }finally{
             ThreadManager TM = ThreadManager.TM;
             synchronized(TM){

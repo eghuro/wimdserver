@@ -41,7 +41,7 @@ public class Communicator {
         this.parser = new Parser(dc);
     }
     
-    public synchronized void communicate() throws IOException,UnsupportedOperationException{
+    public synchronized void communicate() throws InterruptedException, IOException,UnsupportedOperationException{
         boolean work=true;
         StringBuilder sb=new StringBuilder();
         while(work){

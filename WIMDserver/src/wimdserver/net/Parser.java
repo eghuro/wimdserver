@@ -34,6 +34,8 @@ public class Parser {
     final String FAIL="FAIL";//login
     final String OK="OK";
     
+    final long WAIT_MS;
+    
     final DatabaseController DC;
     
     private enum State{
@@ -47,10 +49,11 @@ public class Parser {
     int did;
     
     public Parser(DatabaseController dc){
+        this.WAIT_MS = 1000*60*30;//30 min
         this.DC=dc;
         this.state=State.START;
     }
-    public synchronized ParseResult parse(String s){
+    public synchronized ParseResult parse(String s) throws InterruptedException{
         switch(state){
             case START:
                 switch (s) {
@@ -124,7 +127,9 @@ public class Parser {
                 this.coord=s;
                 try{
                     result=DC.newRecord(sid, did, otp, coord);
+                    
                     //CEKEJ
+                    this.wait(WAIT_MS);
                     
                     //POSLI OTP
                     state=State.START;
