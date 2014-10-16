@@ -17,7 +17,7 @@ public class SynchronizedWorkFlag {
         this.work=true;
     }
     
-    public static SynchronizedWorkFlag INSTANCE = new SynchronizedWorkFlag();
+    public static final SynchronizedWorkFlag INSTANCE = new SynchronizedWorkFlag();
     
     public static SynchronizedWorkFlag GetInstance(){
         return SynchronizedWorkFlag.INSTANCE;

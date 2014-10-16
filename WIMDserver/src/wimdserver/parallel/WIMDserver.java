@@ -45,8 +45,10 @@ public class WIMDserver {
                             tm.New(sock);
                         }else{
                             try {
-                                tm.wait();//ThreadManager available
-                                
+                                while(!tm.GetAvailable()){
+                                    tm.wait();//ThreadManager available
+                                }
+
                                 synchronized(swf){//overit, zda mezitim nedoslo ke zmene swf
                                     work=swf.GetWork();
                                 }
@@ -71,6 +73,10 @@ public class WIMDserver {
             }
         } catch (IOException ex) {
             Logger.getLogger(WIMDserver.class.getName()).log(Level.SEVERE, null, ex);
+            ThreadManager tm = ThreadManager.TM;
+            synchronized(tm){
+                tm.ForceStop();
+            }
         }
         
     }

@@ -50,9 +50,7 @@ public class Communicator {
                 sb.append(c);
             else{
                 ParseResult pr = parser.parse(sb.toString());
-                work = !pr.equals(ParseResult.STOP);
                 switch(pr){
-                    case PARSE:break;
                     case RESULT:
                         String res = parser.getResult();
                         if(res!=null)
