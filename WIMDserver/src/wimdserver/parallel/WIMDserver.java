@@ -78,7 +78,12 @@ public class WIMDserver {
                 tm.ForceStop();
             }
         } catch (Exception e){
-            Logger.getLogger(WIMDserver.class.getName()).log(Level.SEVERE,null,e);
+            Logger l = Logger.getLogger(WIMDserver.class.getName());
+            l.log(Level.SEVERE,"Caught exception!",e);
+            l.log(Level.INFO,"Stack trace",e.getStackTrace());
+            for(Throwable t:e.getSuppressed()){
+                l.log(Level.WARNING,"Suppressed",t);
+            }
         }
         
     }
