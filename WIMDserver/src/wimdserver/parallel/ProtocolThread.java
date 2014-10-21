@@ -16,7 +16,7 @@ import wimdserver.net.Communicator;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class ProtocolThread extends Thread {
+ class ProtocolThread extends Thread {
     Socket socket;
     public ProtocolThread(Socket s){
         this.socket=s;

@@ -10,7 +10,7 @@ package wimdserver.db.controller;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class OTPFactory {
+class OTPFactory {
     private OTPFactory(){
         
     }

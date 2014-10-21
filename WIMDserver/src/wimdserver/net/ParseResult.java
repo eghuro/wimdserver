@@ -9,6 +9,6 @@ package wimdserver.net;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public enum ParseResult {
+enum ParseResult {
     PARSE,RESULT,STOP;
 }

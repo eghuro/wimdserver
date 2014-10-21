@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class ServiceThread  extends Thread{
+class ServiceThread  extends Thread{
     final SynchronizedWorkFlag swf;
     ServerSocket st;
     public ServiceThread(int port) throws IOException{

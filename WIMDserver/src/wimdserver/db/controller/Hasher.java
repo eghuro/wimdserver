@@ -16,7 +16,7 @@ import java.security.SecureRandom;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class Hasher {
+class Hasher {
     public static String saltPwd(String pwd){
         //vygeneruji sul
         //sul ma alespon 32 znaku

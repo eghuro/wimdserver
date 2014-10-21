@@ -10,6 +10,6 @@ package wimdserver.db.controller;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class PasswordException extends Exception {
+class PasswordException extends Exception {
     
 }

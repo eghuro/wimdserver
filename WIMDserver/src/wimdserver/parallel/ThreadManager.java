@@ -12,7 +12,7 @@ import java.util.LinkedList;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class ThreadManager {
+class ThreadManager {
     
     public static final ThreadManager TM = new ThreadManager();
     

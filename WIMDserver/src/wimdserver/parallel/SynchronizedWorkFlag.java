@@ -10,7 +10,7 @@ package wimdserver.parallel;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class SynchronizedWorkFlag {
+class SynchronizedWorkFlag {
     private boolean work;
     
     private SynchronizedWorkFlag(){
