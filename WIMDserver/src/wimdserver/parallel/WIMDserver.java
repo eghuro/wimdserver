@@ -58,7 +58,7 @@ public class WIMDserver {
                                 }
                             } catch (InterruptedException ex) {
                                 tm.ForceStop();
-                                Logger.getLogger(WIMDserver.class.getName()).log(Level.SEVERE, null, ex);
+                                log(ex);
                             }
                         }
                     }
@@ -72,20 +72,24 @@ public class WIMDserver {
                 st.interrupt();
             }
         } catch (IOException ex) {
-            Logger.getLogger(WIMDserver.class.getName()).log(Level.SEVERE, null, ex);
+            log(ex);
             ThreadManager tm = ThreadManager.TM;
             synchronized(tm){
                 tm.ForceStop();
             }
         } catch (Exception e){
-            Logger l = Logger.getLogger(WIMDserver.class.getName());
-            l.log(Level.SEVERE,"Caught exception!",e);
-            l.log(Level.INFO,"Stack trace",e.getStackTrace());
-            for(Throwable t:e.getSuppressed()){
-                l.log(Level.WARNING,"Suppressed",t);
-            }
+            log(e);
         }
         
+    }
+    
+    static void log(Exception e){
+        Logger l = Logger.getLogger(WIMDserver.class.getName());
+        l.log(Level.SEVERE,"Caught exception!",e);
+        l.log(Level.INFO,"Stack trace",e.getStackTrace());
+        for(Throwable t:e.getSuppressed()){
+            l.log(Level.WARNING,"Suppressed",t);
+        }
     }
     
 }
