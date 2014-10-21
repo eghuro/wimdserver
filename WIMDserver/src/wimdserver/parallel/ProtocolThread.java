@@ -38,8 +38,9 @@ public class ProtocolThread extends Thread {
                 socket.close();
             } catch (IOException ex) {
                 Logger.getLogger(ProtocolThread.class.getName()).log(Level.SEVERE, null, ex);
+            }finally{
+                this.interrupt();
             }
-            this.interrupt();
         }finally{
             ThreadManager TM = ThreadManager.TM;
             synchronized(TM){

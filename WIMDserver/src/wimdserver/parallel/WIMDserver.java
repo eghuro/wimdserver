@@ -77,6 +77,8 @@ public class WIMDserver {
             synchronized(tm){
                 tm.ForceStop();
             }
+        } catch (Exception e){
+            Logger.getLogger(WIMDserver.class.getName()).log(Level.SEVERE,null,e);
         }
         
     }
