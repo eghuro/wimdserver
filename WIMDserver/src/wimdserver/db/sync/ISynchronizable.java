@@ -6,7 +6,7 @@
 package wimdserver.db.sync;
 
 /**
- *
+ * ISynchronizable databaze se umi synchronizovat s ulozistem na disku
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public interface ISynchronizable {

@@ -56,6 +56,7 @@ public class Communicator {
                         if(res!=null)
                             out.write(res);
                         break;
+                    case PARSE:break;//nedelej nic (cti dale) - ale chci vyjimku na cokoliv jineho pro osetreni chyb
                     case STOP:
                         work=false;
                         break;

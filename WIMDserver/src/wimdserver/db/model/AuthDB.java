@@ -74,7 +74,7 @@ public class AuthDB implements ISynchronizable {
     }
 
     @Override
-    public DBRecord[] export() {
+    public synchronized DBRecord[] export() {
         DBRecord[] db = new DBRecord[pwds.size()*2];
         int i=0;
         for(Entry<String,SaltRec> e:pwds.entrySet()){
@@ -86,7 +86,7 @@ public class AuthDB implements ISynchronizable {
     }
 
     @Override
-    public void load(DBRecord[] data) {
+    public synchronized void load(DBRecord[] data) {
         for(DBRecord d:data){
             SaltRec sr;
             if(pwds.containsKey(d.getName())){

@@ -8,7 +8,8 @@ package wimdserver.db.sync;
 import wimdserver.db.sync.drivers.IDriver;
 
 /**
- *
+ * Ovladac pro nejaky IDriver - umi nacist data do ISynchronizable a ulozit data
+ * z ISynchronizable databaze
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public class ImportExportController {
