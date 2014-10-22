@@ -6,46 +6,16 @@
 
 package wimdserver.db.model;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import wimdserver.db.sync.DBRecord;
-import wimdserver.db.sync.ISynchronizable;
 
 /**
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class DeviceRecordDB implements ISynchronizable {
+public class DeviceRecordDB{
 
-    @Override
-    public DBRecord[] export() {
-        DBRecord[] dbr = new DBRecord[recs.size()*4];
-        int i=0;
-        for(Entry<Integer, LinkedList<DeviceRecord>> e:recs.entrySet()){
-            LinkedList<DeviceRecord> ll = e.getValue();
-            int j=0;
-            for(DeviceRecord dr:ll){
-                dbr[i]=new DBRecord("devR-otp",j+"",dr.otp);
-                dbr[i+1]=new DBRecord("devR-coord",j+"",dr.coord);
-                DateFormat df = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss");
-                dbr[i+2]=new DBRecord("devR-received",j+"",df.format(dr.received));
-                dbr[i+3]=new DBRecord("devR-salt",j+"",dr.salt);
-                i=i+4;
-                j++;
-            }
-            //e: otp coord received salt
-        }
-        return dbr;
-    }
-
-    @Override
-    public void load(DBRecord[] data) {
-        
-    }
     private class DeviceRecord{
         public String otp,salt,coord;
         public Date received;

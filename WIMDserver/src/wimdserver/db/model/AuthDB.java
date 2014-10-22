@@ -9,14 +9,14 @@ package wimdserver.db.model;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import wimdserver.db.sync.DBRecord;
-import wimdserver.db.sync.ISynchronizable;
+import wimdserver.db.sync.model.AuthSalt;
+import wimdserver.db.sync.model.AuthSession;
 
 /**
  * Dostane UID a PWD a rekne JO/NE
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public class AuthDB implements ISynchronizable {
+public class AuthDB {
     
     private final ConcurrentHashMap<String,SaltRec> pwds;
     private final ConcurrentHashMap<String,SessionRec> sessions;
@@ -72,40 +72,6 @@ public class AuthDB implements ISynchronizable {
             else return null;
         }else return null;
     }
-
-    @Override
-    public synchronized DBRecord[] export() {
-        DBRecord[] db = new DBRecord[pwds.size()*2];
-        int i=0;
-        for(Entry<String,SaltRec> e:pwds.entrySet()){
-            db[i]=new DBRecord("authHashes",e.getKey(),e.getValue().hash);
-            db[i+1] = new DBRecord("authSalts",e.getKey(),e.getValue().salt);
-            i=i+2;
-        }
-        return db;
-    }
-
-    @Override
-    public synchronized void load(DBRecord[] data) {
-        for(DBRecord d:data){
-            SaltRec sr;
-            if(pwds.containsKey(d.getName())){
-                sr=pwds.get(d.getName());
-                pwds.remove(d.getName());
-            }else{
-                sr = new SaltRec(null,null);
-            }
-            switch (d.getTable()) {
-                case "authHashes":
-                    sr.hash=d.getValue();
-                    break;
-                case "authSalts":
-                    sr.salt=d.getValue();
-                    break;
-            }
-            pwds.put(d.getName(), sr);
-        }
-    }
     
     private class SaltRec{
         public String hash,salt;
@@ -122,5 +88,27 @@ public class AuthDB implements ISynchronizable {
             this.UID=UID;
             this.validity=validity;
         }
+    }
+    
+    public AuthSalt[] GetSaltTable(){
+        AuthSalt[] table = new AuthSalt[pwds.size()];
+        
+        int i=0;
+        for(Entry<String,SaltRec> e : pwds.entrySet()){
+            table[i++] = new AuthSalt(e.getKey(),e.getValue().hash,e.getValue().salt);
+        }
+        
+        return table;
+    }
+    
+    public AuthSession[] GetSessionTable(){
+        AuthSession[] table = new AuthSession[sessions.size()];
+        
+        int i=0;
+        for(Entry<String,SessionRec> e:sessions.entrySet()){
+            table[i++] = new AuthSession(e.getKey(),e.getValue().UID,e.getValue().validity);
+        }
+        
+        return table;
     }
 }
