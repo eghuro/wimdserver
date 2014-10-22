@@ -34,7 +34,7 @@ public class Parser {
     final String FAIL="FAIL";//login
     final String OK="OK";
     
-    final long WAIT_MS;
+    final long WAIT_MS=1800000;//30 min
     
     final DatabaseController DC;
     
@@ -49,11 +49,10 @@ public class Parser {
     int did;
     
     public Parser(DatabaseController dc){
-        this.WAIT_MS = 1000*60*30;//30 min
         this.DC=dc;
         this.state=State.START;
     }
-    public synchronized ParseResult parse(String s) throws InterruptedException{
+    synchronized ParseResult parse(String s) throws InterruptedException{
         switch(state){
             case START:
                 switch (s) {
@@ -173,7 +172,7 @@ public class Parser {
                 return ParseResult.RESULT;
         }
     }
-    public synchronized String getResult(){
+    synchronized String getResult(){
         return result;
     }
 }

@@ -46,22 +46,24 @@ public class Communicator {
         StringBuilder sb=new StringBuilder();
         while(work){
             char c = (char)in.read();
-            if(c!=' ')
+            if(Character.isWhitespace(c)) {
+                if(sb.length()>0){
+                    ParseResult pr = parser.parse(sb.toString());
+                    switch(pr){
+                        case RESULT:
+                            String res = parser.getResult();
+                            if(res!=null)
+                                out.write(res);
+                            break;
+                        case PARSE:break;//nedelej nic (cti dale) - ale chci vyjimku na cokoliv jineho pro osetreni chyb
+                        case STOP:
+                            work=false;
+                            break;
+                        default: throw new UnsupportedOperationException(pr.name());
+                    }
+                }//jinak jde o bily znak na zacatku .. vynechavam
+            } else {
                 sb.append(c);
-            else{
-                ParseResult pr = parser.parse(sb.toString());
-                switch(pr){
-                    case RESULT:
-                        String res = parser.getResult();
-                        if(res!=null)
-                            out.write(res);
-                        break;
-                    case PARSE:break;//nedelej nic (cti dale) - ale chci vyjimku na cokoliv jineho pro osetreni chyb
-                    case STOP:
-                        work=false;
-                        break;
-                    default: throw new UnsupportedOperationException(pr.name());
-                }
             }
         }
     }
