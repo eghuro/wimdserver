@@ -46,6 +46,7 @@ public class Manager {
             );
         
         SYNCERS = new Synchronizer[0];
+        //TODO nacist konfiguraci, vytvorit drivery, vytvorit prislusne syncery
     }
     
     public AuthDB getAuthDB(){
