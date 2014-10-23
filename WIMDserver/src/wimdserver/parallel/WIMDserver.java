@@ -39,25 +39,28 @@ public class WIMDserver {
                 }
                 
                 while(work){
-                    Socket sock = s.accept();
-                    
-                    while(!newT(sock)&&work){
-                        ThreadManager tm = ThreadManager.TM;
-                        synchronized(tm){
-                            while(!tm.GetAvailable()){
-                                tm.wait();
+                    try(Socket sock = s.accept()){
+                        while(!newT(sock)&&work){
+                            ThreadManager tm = ThreadManager.TM;
+                            synchronized(tm){
+                                while(!tm.GetAvailable()){
+                                    tm.wait();
+                                }
+                            }
+                            synchronized(swf){
+                                work=swf.GetWork();
+                            }
+                            if(!work){
+                                sock.close();
                             }
                         }
+                    }catch(IOException e){
+                        log(e);
+                    }finally{
                         synchronized(swf){
                             work=swf.GetWork();
                         }
-                        if(!work){
-                            sock.close();
-                        }
-                    }
-                    
-                    synchronized(swf){
-                        work=swf.GetWork();
+                        continue;
                     }
                 }
                 
