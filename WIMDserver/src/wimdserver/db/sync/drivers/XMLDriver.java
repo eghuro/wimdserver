@@ -17,6 +17,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import wimdserver.db.sync.model.AuthSalt;
 import wimdserver.db.sync.model.AuthSession;
+import wimdserver.db.sync.model.DRDBRecord;
 import wimdserver.db.sync.model.Row;
 import wimdserver.db.sync.model.UserDevice;
 
@@ -109,6 +110,26 @@ public class XMLDriver implements IDriver {
                     case "DRDBDevice":
                         break;
                     case "DRDBRecord":
+                        String did=null,coord=null,received=null;
+                        for(int i=0;i<columns.getLength();i++){
+                            Element u = (Element)columns.item(i);
+                            switch(u.getAttribute("name")){
+                                case "did":
+                                    did=u.getAttribute("value");
+                                    break;
+                                case "coord":
+                                    coord=u.getAttribute("value");
+                                    break;
+                                case "received":
+                                    received=u.getAttribute("value");
+                                    break;
+                                default:
+                                    throw new ParseException(u.getAttribute("name"),0);
+                            }
+                        }
+                        if((did!=null)&&(coord!=null)&(received!=null)){
+                            return new DRDBRecord(s,Integer.parseInt(did),coord,AuthSession.getDateFormat().parse(received));
+                        }
                         break;
                     case "UDDB":
                         String uid_=null;
