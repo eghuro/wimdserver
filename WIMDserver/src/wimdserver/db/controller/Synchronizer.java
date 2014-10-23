@@ -21,37 +21,38 @@ import wimdserver.db.sync.model.Row;
  */
 public class Synchronizer {
     
+    final IDriver DRIVER;
     
-    public Synchronizer(){
-        
+    public Synchronizer(IDriver driver){
+        this.DRIVER=driver;
     }
     
-    public void synchronizeAuthDB(AuthDB ad,IDriver driver) throws ParseException {
+    public void synchronizeAuthDB(AuthDB ad) throws ParseException {
         //AUTH SALT
-        String[] keys=getKeys(ad.GetSaltTable(),driver,"AuthSalt");
+        String[] keys=getKeys(ad.GetSaltTable(),"AuthSalt");
         //zaznamy s temito klici chci vlozit do db
         for(String key:keys){
-            ad.setUser(key, driver.getRowByKey("AuthSalt",key).getItem("hash"), driver.getRowByKey("AuthSalt",key).getItem("salt"));
+            ad.setUser(key, DRIVER.getRowByKey("AuthSalt",key).getItem("hash"), DRIVER.getRowByKey("AuthSalt",key).getItem("salt"));
         }
 
         //AUTH DB
-        keys = getKeys(ad.GetSessionTable(),driver,"AuthSession");
+        keys = getKeys(ad.GetSessionTable(),"AuthSession");
         for(String key:keys){
-            ad.registerSID(key, driver.getRowByKey("AuthSalt",key).getItem("uid"), AuthSession.getDateFormat().parse(driver.getRowByKey("AuthSalt", key).getItem("validity")));
+            ad.registerSID(key, DRIVER.getRowByKey("AuthSalt",key).getItem("uid"), AuthSession.getDateFormat().parse(DRIVER.getRowByKey("AuthSalt", key).getItem("validity")));
         }
     }
     
-    public void synchronizeDeviceRecordDB(DeviceRecordDB drdb,IDriver driver) throws ParseException{
-        String[] k1 = getKeys(drdb.getDeviceTable(),driver,"DRDBDevice");
-        String[] k2 = getKeys(drdb.getRecordTable(),driver,"DRDBRecord");
+    public void synchronizeDeviceRecordDB(DeviceRecordDB drdb) throws ParseException{
+        String[] k1 = getKeys(drdb.getDeviceTable(),"DRDBDevice");
+        String[] k2 = getKeys(drdb.getRecordTable(),"DRDBRecord");
         for(String did:k1){//drdbdevice
             //naber recordy z drdbrecord
-            String otp = driver.getRowByKey("DRDBDevice", "did").getItem("otp");
-            String salt = driver.getRowByKey("DRDBDevice","did").getItem("salt");
+            String otp = DRIVER.getRowByKey("DRDBDevice", "did").getItem("otp");
+            String salt = DRIVER.getRowByKey("DRDBDevice","did").getItem("salt");
             for(String id:k2){
-                if(driver.getRowByKey("DRDBRecord", id).getItem("did").equals(did)){
-                    String coord = driver.getRowByKey("DRDBRecord", id).getItem("coord");
-                    String received = driver.getRowByKey("DRDBRecord",id).getItem("received");
+                if(DRIVER.getRowByKey("DRDBRecord", id).getItem("did").equals(did)){
+                    String coord = DRIVER.getRowByKey("DRDBRecord", id).getItem("coord");
+                    String received = DRIVER.getRowByKey("DRDBRecord",id).getItem("received");
 
                     drdb.setRecord(Integer.parseInt(did), otp, salt, coord, AuthSession.getDateFormat().parse(received));
                 }
@@ -59,31 +60,31 @@ public class Synchronizer {
         }
     }
     
-    public void synchronizeUserDeviceDB(UserDeviceDB uddb,IDriver driver){
-        String[] keys=getKeys(uddb.getTable(),driver,"UDDB");
+    public void synchronizeUserDeviceDB(UserDeviceDB uddb){
+        String[] keys=getKeys(uddb.getTable(),"UDDB");
         for(String key:keys){
-            uddb.setRecord(Integer.parseInt(key), driver.getRowByKey("UDDB", key).getItem("uid"));
+            uddb.setRecord(Integer.parseInt(key), DRIVER.getRowByKey("UDDB", key).getItem("uid"));
         }
     }
     
-    private String[] getKeys(Row[] as,IDriver driver,String table){
+    private String[] getKeys(Row[] as,String table){
         HashSet<String> primaries = new HashSet<>();
         //export
         for(Row a:as){//polozka v authdb
-            Row b=driver.getRowByKey(table,a.getPrimary());//najdi odpovidajici zaznam v ulozisti
+            Row b=DRIVER.getRowByKey(table,a.getPrimary());//najdi odpovidajici zaznam v ulozisti
             if(b!=null){
                 Iterator<String> ib=b.iterator();
                 for(String x:a){//over hodnoty
                     if(ib.hasNext()){
                         if(!x.equals(ib.next())){//zaznamy se lisi - aktualizuj uloziste nasim zaznamem
-                            driver.rmRow(table,a.getPrimary());
-                            driver.setRow(table,a);
+                            DRIVER.rmRow(table,a.getPrimary());
+                            DRIVER.setRow(table,a);
                             break;
                         }
                     } else throw new RuntimeException();//nekompadibilni format                }
                 }
             }else{//novy zaznam
-                driver.setRow(table,a);
+                DRIVER.setRow(table,a);
             }
             primaries.add(a.getPrimary());
         }
@@ -91,10 +92,10 @@ public class Synchronizer {
         
         //import
         //chci z uloziste zaznamy s klici, ktere nejsou v primaries
-        int x = driver.getKeys(table).length-primaries.size();
+        int x = DRIVER.getKeys(table).length-primaries.size();
         String[] keys = new String[x];
         int i=0;
-        for(String k:driver.getKeys(table)){
+        for(String k:DRIVER.getKeys(table)){
             if(!primaries.contains(k)){
                 keys[i++]=k;
             }
