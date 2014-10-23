@@ -12,7 +12,7 @@ import wimdserver.db.sync.model.Row;
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public interface IDriver{
-    Row getRowByKey(String table,String s);
+    Row getRowByKey(String table,String s) throws Exception;
     void rmRow(String table,String key);
     void setRow(String table,Row r);
     String[] getKeys(String table);
