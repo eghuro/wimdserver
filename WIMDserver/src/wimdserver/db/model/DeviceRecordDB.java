@@ -72,7 +72,7 @@ public class DeviceRecordDB{
         return recs.containsKey(did);
     }
     
-    public DRDBDevice[] getDeviceTable(){
+    public synchronized DRDBDevice[] getDeviceTable(){
         DRDBDevice[] table = new DRDBDevice[recs.size()];
         int i=0;
         for(Entry<Integer,DeviceRecord> e:recs.entrySet()){
@@ -81,7 +81,7 @@ public class DeviceRecordDB{
         return table;
     }
     
-    public DRDBRecord[] getRecordTable(){
+    public synchronized DRDBRecord[] getRecordTable(){
         int count = 0;
         DRDBRecord[] table = new DRDBRecord[recs.entrySet().stream().map((e) -> e.getValue().crs.size()).reduce(count, Integer::sum)];
         

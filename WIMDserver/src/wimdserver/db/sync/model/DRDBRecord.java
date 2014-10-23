@@ -13,16 +13,16 @@ import java.util.Date;
  */
 public class DRDBRecord extends Row{
     static{
-        item_names=new String[]{"did","i","coord","received"};
-        primary="did";
+        item_names=new String[]{"id","did","coord","received"};
+        primary="id";
     }
     
     public DRDBRecord(String DID,int i,String coord,Date received){
         if(i<0)
             throw new IndexOutOfBoundsException("i:"+i);
-        items = new String[4];
-        items[0]=DID;
-        items[1]=i+"";
+        items = new String[3];
+        items[0]=DID+i;
+        items[1]=DID;
         items[2]=coord;
         items[3]=AuthSession.getDateFormat().format(received);
     }

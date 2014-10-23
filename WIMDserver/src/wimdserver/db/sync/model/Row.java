@@ -18,7 +18,7 @@ public abstract class Row implements Iterable<String>{
     
     String[] items;//kazdy radek ma pole svych hodnot
     
-    public String getItem(String name){
+    public synchronized String getItem(String name){
         for(int i=0;i<item_names.length;i++){
             if(item_names[i].equals(name)){
                 return items[i];
@@ -27,15 +27,15 @@ public abstract class Row implements Iterable<String>{
         throw new NoSuchElementException(name);
     }
     
-    public String[] getColumnNames(){
+    public synchronized String[] getColumnNames(){
         return item_names;
     }
     
-    public String[] getColumnValues(){
+    public synchronized String[] getColumnValues(){
         return items;
     }
     
-    public String getPrimary(){
+    public synchronized String getPrimary(){
         return primary;
     }
 
@@ -45,12 +45,12 @@ public abstract class Row implements Iterable<String>{
             int i=0;
             
             @Override
-            public boolean hasNext() {
+            public synchronized boolean hasNext() {
                 return i<items.length;
             }
 
             @Override
-            public String next() {
+            public synchronized String next() {
                 if(i<items.length){
                     return items[i++];
                 }else{

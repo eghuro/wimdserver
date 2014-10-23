@@ -10,4 +10,6 @@ package wimdserver.db.controller;
  * 
  * Predpoklada se pouziti API dostupneho ve tride DatabaseController, ktere 
  * obsahuje metody odpovidajici moznym cinnostem aplikace
+ * 
+ * Pro synchronizaci databaze s ulozistem slouzi Synchronizer
  */

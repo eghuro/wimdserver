@@ -41,8 +41,22 @@ public class Synchronizer {
         }
     }
     
-    public void synchronizeDeviceRecordDB(DeviceRecordDB drdb,IDriver driver){
-        
+    public void synchronizeDeviceRecordDB(DeviceRecordDB drdb,IDriver driver) throws ParseException{
+        String[] k1 = getKeys(drdb.getDeviceTable(),driver,"DRDBDevice");
+        String[] k2 = getKeys(drdb.getRecordTable(),driver,"DRDBRecord");
+        for(String did:k1){//drdbdevice
+            //naber recordy z drdbrecord
+            String otp = driver.getRowByKey("DRDBDevice", "did").getItem("otp");
+            String salt = driver.getRowByKey("DRDBDevice","did").getItem("salt");
+            for(String id:k2){
+                if(driver.getRowByKey("DRDBRecord", id).getItem("did").equals(did)){
+                    String coord = driver.getRowByKey("DRDBRecord", id).getItem("coord");
+                    String received = driver.getRowByKey("DRDBRecord",id).getItem("received");
+
+                    drdb.setRecord(Integer.parseInt(did), otp, salt, coord, AuthSession.getDateFormat().parse(received));
+                }
+            }
+        }
     }
     
     public void synchronizeUserDeviceDB(UserDeviceDB uddb,IDriver driver){

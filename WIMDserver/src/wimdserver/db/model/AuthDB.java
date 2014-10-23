@@ -90,7 +90,7 @@ public class AuthDB {
         }
     }
     
-    public AuthSalt[] GetSaltTable(){
+    public synchronized AuthSalt[] GetSaltTable(){
         AuthSalt[] table = new AuthSalt[pwds.size()];
         
         int i=0;
@@ -101,7 +101,7 @@ public class AuthDB {
         return table;
     }
     
-    public AuthSession[] GetSessionTable(){
+    public synchronized AuthSession[] GetSessionTable(){
         AuthSession[] table = new AuthSession[sessions.size()];
         
         int i=0;
