@@ -29,7 +29,7 @@ public class WIMDserver {
             st.start();
             
             SyncThread synt = new SyncThread();
-            synt.run();
+            synt.start();
             
             try(ServerSocket s = new ServerSocket(SSP)) {
                 boolean work;
@@ -37,8 +37,6 @@ public class WIMDserver {
                 synchronized(swf){
                     work=swf.GetWork();
                 }
-                
-                
                 
                 while(work){
                     Socket sock = s.accept();
@@ -52,6 +50,9 @@ public class WIMDserver {
                         }
                         synchronized(swf){
                             work=swf.GetWork();
+                        }
+                        if(!work){
+                            sock.close();
                         }
                     }
                     
