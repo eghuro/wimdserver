@@ -34,7 +34,7 @@ public class Parser {
     final String FAIL="FAIL";//login
     final String OK="OK";
     
-    final long WAIT_MS=1800000;//30 min
+    final int WAIT_MS=1800000;//30 min
     
     final DatabaseController DC;
     
@@ -52,7 +52,7 @@ public class Parser {
         this.DC=dc;
         this.state=State.START;
     }
-    synchronized ParseResult parse(String s) throws InterruptedException{
+    ParseResult parse(String s) throws InterruptedException{
         switch(state){
             case START:
                 switch (s) {
@@ -128,7 +128,7 @@ public class Parser {
                     result=DC.newRecord(sid, did, otp, coord);
                     
                     //CEKEJ
-                    this.wait(WAIT_MS);
+                    Thread.sleep(WAIT_MS);
                     
                     //POSLI OTP
                     state=State.START;

@@ -39,12 +39,10 @@ public class SyncThread extends Thread {
                 work=swf.GetWork();
             }
             if(work){
-                synchronized(this){
-                    try {
-                        this.wait(WAIT);
-                    } catch (InterruptedException ex) {
-                        this.interrupt();
-                    }
+                try {
+                    sleep(WAIT);
+                } catch (InterruptedException ex) {
+                    this.interrupt();
                 }
             }
         }
