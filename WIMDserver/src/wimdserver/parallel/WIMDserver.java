@@ -28,6 +28,9 @@ public class WIMDserver {
             ServiceThread st = new ServiceThread(STP);
             st.start();
             
+            SyncThread synt = new SyncThread();
+            synt.run();
+            
             try(ServerSocket s = new ServerSocket(SSP)) {
                 boolean work;
                 SynchronizedWorkFlag swf = SynchronizedWorkFlag.INSTANCE;
@@ -35,31 +38,20 @@ public class WIMDserver {
                     work=swf.GetWork();
                 }
                 
-                ThreadManager tm = ThreadManager.TM;
+                
                 
                 while(work){
                     Socket sock = s.accept();
                     
-                    synchronized(tm){
-                        if(tm.GetAvailable()){
-                            tm.New(sock);
-                        }else{
-                            try {
-                                while(!tm.GetAvailable()){
-                                    tm.wait();//ThreadManager available
-                                }
-
-                                synchronized(swf){//overit, zda mezitim nedoslo ke zmene swf
-                                    work=swf.GetWork();
-                                }
-                                
-                                if(work){
-                                    tm.New(sock);//pouze pokud je i zde volno, otevri spojeni
-                                }
-                            } catch (InterruptedException ex) {
-                                tm.ForceStop();
-                                log(ex);
+                    while(!newT(sock)&&work){
+                        ThreadManager tm = ThreadManager.TM;
+                        synchronized(tm){
+                            while(!tm.GetAvailable()){
+                                tm.wait();
                             }
+                        }
+                        synchronized(swf){
+                            work=swf.GetWork();
                         }
                     }
                     
@@ -70,6 +62,7 @@ public class WIMDserver {
                 
             }finally{
                 st.interrupt();
+                synt.interrupt();
             }
         } catch (IOException ex) {
             log(ex);
@@ -89,6 +82,18 @@ public class WIMDserver {
         l.log(Level.INFO,"Stack trace",e.getStackTrace());
         for(Throwable t:e.getSuppressed()){
             l.log(Level.WARNING,"Suppressed",t);
+        }
+    }
+    
+    static boolean newT(Socket sock){
+        ThreadManager tm = ThreadManager.TM;
+        synchronized(tm){
+            if(tm.GetAvailable()){
+                tm.New(sock);
+                return true;
+            }else{
+                return false;
+            }
         }
     }
     
