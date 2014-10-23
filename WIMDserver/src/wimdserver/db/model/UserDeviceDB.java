@@ -7,6 +7,8 @@
 package wimdserver.db.model;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
+import wimdserver.db.sync.model.UserDevice;
 
 /**
  *
@@ -27,5 +29,14 @@ public class UserDeviceDB {
     
     public synchronized void setRecord(int DID,String UID){
         this.DIDUID.put(DID, UID);
+    }
+    
+    public synchronized UserDevice[] getTable(){
+        UserDevice[] table = new UserDevice[DIDUID.size()];
+        int i=0;
+        for(Entry<Integer,String> e:DIDUID.entrySet()){
+            table[i++]=new UserDevice(e.getKey()+"",e.getValue());
+        }
+        return table;
     }
 }

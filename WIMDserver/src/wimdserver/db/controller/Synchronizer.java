@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import wimdserver.db.model.AuthDB;
 import wimdserver.db.model.DeviceRecordDB;
+import wimdserver.db.model.UserDeviceDB;
 import wimdserver.db.sync.drivers.IDriver;
 import wimdserver.db.sync.model.AuthSession;
 import wimdserver.db.sync.model.Row;
@@ -42,6 +43,13 @@ public class Synchronizer {
     
     public void synchronizeDeviceRecordDB(DeviceRecordDB drdb,IDriver driver){
         
+    }
+    
+    public void synchronizeUserDeviceDB(UserDeviceDB uddb,IDriver driver){
+        String[] keys=getKeys(uddb.getTable(),driver,"UDDB");
+        for(String key:keys){
+            uddb.setRecord(Integer.parseInt(key), driver.getRowByKey("UDDB", key).getItem("uid"));
+        }
     }
     
     private String[] getKeys(Row[] as,IDriver driver,String table){
