@@ -25,8 +25,6 @@ public class AuthSession extends Row {
     }
     
     public AuthSession(String sid,String uid,Date validity){
-       
-        
         items = new String[3];
         items[0] = sid;
         items[1] = uid;

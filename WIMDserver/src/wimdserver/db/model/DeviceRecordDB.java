@@ -9,6 +9,10 @@ package wimdserver.db.model;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import wimdserver.db.sync.model.DRDBDevice;
+import wimdserver.db.sync.model.DRDBRecord;
 
 /**
  *
@@ -16,46 +20,78 @@ import java.util.LinkedList;
  */
 public class DeviceRecordDB{
 
+    private class CoordRec{
+            public String coord;
+            public Date received;
+            public CoordRec(String c,Date r){
+                this.coord=c;
+                this.received=r;
+            }
+        }
+    
     private class DeviceRecord{
-        public String otp,salt,coord;
-        public Date received;
-        //TODO LSS v device record, jedno aktualni OTP a salt pro DR
-        public DeviceRecord(String otp,String salt,String coord, Date received){
+        public String otp,salt;
+        public List<CoordRec> crs;
+        public DeviceRecord(String otp,String salt,List<CoordRec> coordRecs){
             this.otp=otp;
-            this.coord=coord;
-            this.received=received;
             this.salt=salt;
+            this.crs=coordRecs;
         }
     }
     //struktura: hashmap podle did -> LSS podle date (predpoklad, chci posledni udaj, pridat novy udaj - tedy nejnovejsi v hlave)
-    final ConcurrentHashMap<Integer,LinkedList<DeviceRecord>> recs;
+    final ConcurrentHashMap<Integer,DeviceRecord> recs;
     public DeviceRecordDB(){
         recs=new ConcurrentHashMap<>();
     }
     
     public synchronized void setRecord(int did,String OTPhash,String salt,String coord,Date received){
-        //ulozit jen hash OTP
-        DeviceRecord dr = new DeviceRecord(OTPhash,salt,coord,received);
-        
+        DeviceRecord dr;
         if(recs.containsKey(did)){
-            LinkedList<DeviceRecord> ll = recs.get(did);
-            ll.addFirst(dr);
+            dr = recs.get(did);
+            if(dr.otp.equals(OTPhash)&&dr.salt.equals(salt)){
+                dr.crs.add(new CoordRec(coord, received));
+            }else throw new IllegalArgumentException("Hash or salt don't match record for DID");
         }else{
-            LinkedList<DeviceRecord> ll = new LinkedList<>();
-            ll.addFirst(dr);
-            recs.put(did, ll);
+            CoordRec cr = new CoordRec(coord,received);
+            LinkedList<CoordRec> ll = new LinkedList<>();
+            ll.add(cr);
+            dr = new DeviceRecord(OTPhash,salt,ll);
+            recs.put(did, dr);
         }
     }
     
     public synchronized String getOTPHash(int did){
-        return recs.get(did).get(0).otp;
+        return recs.get(did).otp;
     }
     
     public synchronized String getSalt(int did){
-        return recs.get(did).get(0).salt;
+        return recs.get(did).salt;
     }
     
     public synchronized boolean hasRecordForDID(int did){
         return recs.containsKey(did);
+    }
+    
+    public DRDBDevice[] getDeviceTable(){
+        DRDBDevice[] table = new DRDBDevice[recs.size()];
+        int i=0;
+        for(Entry<Integer,DeviceRecord> e:recs.entrySet()){
+            table[i++] = new DRDBDevice(""+e.getKey(),e.getValue().otp,e.getValue().salt,e.getValue().crs.size());
+        }
+        return table;
+    }
+    
+    public DRDBRecord[] getRecordTable(){
+        int count = 0;
+        DRDBRecord[] table = new DRDBRecord[recs.entrySet().stream().map((e) -> e.getValue().crs.size()).reduce(count, Integer::sum)];
+        
+        int i=0;
+        for(Entry<Integer,DeviceRecord> e:recs.entrySet()){
+            for(CoordRec c:e.getValue().crs){
+                table[i++]=new DRDBRecord(""+e.getKey(),i%e.getValue().crs.size(),c.coord,c.received);
+            }
+        }
+        
+        return table;
     }
 }

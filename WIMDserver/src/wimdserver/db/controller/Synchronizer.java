@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Iterator;
 import wimdserver.db.model.AuthDB;
+import wimdserver.db.model.DeviceRecordDB;
 import wimdserver.db.sync.drivers.IDriver;
 import wimdserver.db.sync.model.AuthSession;
 import wimdserver.db.sync.model.Row;
@@ -39,13 +40,16 @@ public class Synchronizer {
         }
     }
     
+    public void synchronizeDeviceRecordDB(DeviceRecordDB drdb,IDriver driver){
+        
+    }
+    
     private String[] getKeys(Row[] as,IDriver driver,String table){
         HashSet<String> primaries = new HashSet<>();
         //export
         for(Row a:as){//polozka v authdb
             Row b=driver.getRowByKey(table,a.getPrimary());//najdi odpovidajici zaznam v ulozisti
             if(b!=null){
-                //Iterator<String> ia = a.iterator();
                 Iterator<String> ib=b.iterator();
                 for(String x:a){//over hodnoty
                     if(ib.hasNext()){
