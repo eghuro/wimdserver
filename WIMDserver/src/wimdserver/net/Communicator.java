@@ -12,13 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import wimdserver.db.controller.AuthController;
-import wimdserver.db.controller.DatabaseController;
-import wimdserver.db.controller.RecordController;
-import wimdserver.db.controller.UserDeviceController;
-import wimdserver.db.model.AuthDB;
-import wimdserver.db.model.DeviceRecordDB;
-import wimdserver.db.model.UserDeviceDB;
+import wimdserver.db.Manager;
 
 /**
  *
@@ -29,16 +23,12 @@ public class Communicator {
     final BufferedReader in;
     final PrintWriter out;
     final Parser parser;
-    final DatabaseController dc;
     
     public Communicator(Socket s) throws IOException{
         this.socket=s;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
-        AuthController ac;
-        ac = new AuthController(new AuthDB());
-        this.dc=new DatabaseController(ac,new RecordController(new DeviceRecordDB()),new UserDeviceController(new UserDeviceDB(),ac));
-        this.parser = new Parser(dc);
+        this.parser = new Parser(Manager.MANAGER.getDatabaseController());
     }
     
     public synchronized void communicate() throws InterruptedException, IOException,UnsupportedOperationException{
