@@ -5,6 +5,7 @@
  */
 package wimdserver.db.sync.model;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,14 +16,20 @@ import java.util.Date;
 public class AuthSession extends Row {
     static{
         item_names=new String[]{"sid","uid","validity"};
+        primary="sid";
+    }
+    private static final SimpleDateFormat DF = new SimpleDateFormat();
+    
+    public static DateFormat getDateFormat(){
+        return DF;
     }
     
     public AuthSession(String sid,String uid,Date validity){
-        SimpleDateFormat df = new SimpleDateFormat();
+       
         
         items = new String[3];
         items[0] = sid;
         items[1] = uid;
-        items[2] = df.format(validity);
+        items[2] = DF.format(validity);
     }
 }

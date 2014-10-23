@@ -12,6 +12,7 @@ package wimdserver.db.sync.model;
 public class AuthSalt extends Row {
     static{//static initializer
         item_names=new String[]{"uid","hash","salt"};
+        primary="uid";
     }
     
     public AuthSalt(String uid, String hash, String salt){

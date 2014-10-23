@@ -12,12 +12,13 @@ import java.util.NoSuchElementException;
  *
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
-public abstract class Row implements Iterable{
+public abstract class Row implements Iterable<String>{
     static String[] item_names; //staticke pole s nazvy polozek - spolecne pro vsechny radky
+    static String primary;
     
     String[] items;//kazdy radek ma pole svych hodnot
     
-    public String GetItem(String name){
+    public String getItem(String name){
         for(int i=0;i<item_names.length;i++){
             if(item_names[i].equals(name)){
                 return items[i];
@@ -26,16 +27,20 @@ public abstract class Row implements Iterable{
         throw new NoSuchElementException(name);
     }
     
-    public String[] GetColumnNames(){
+    public String[] getColumnNames(){
         return item_names;
     }
     
-    public String[] GetColumnValues(){
+    public String[] getColumnValues(){
         return items;
+    }
+    
+    public String getPrimary(){
+        return primary;
     }
 
     @Override
-    public Iterator iterator() {
+    public Iterator<String> iterator() {
         return new Iterator(){
             int i=0;
             
@@ -45,7 +50,7 @@ public abstract class Row implements Iterable{
             }
 
             @Override
-            public Object next() {
+            public String next() {
                 if(i<items.length){
                     return items[i++];
                 }else{
