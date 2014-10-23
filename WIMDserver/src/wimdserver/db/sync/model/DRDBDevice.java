@@ -11,17 +11,14 @@ package wimdserver.db.sync.model;
  */
 public class DRDBDevice extends Row {
     static{
-        item_names=new String[]{"did","otp","salt","n"};
+        item_names=new String[]{"did","otp","salt"};
         primary="did";
     }
     
-    public DRDBDevice(String DID,String OTP,String salt,int n){
-        if(n<0)
-            throw new IndexOutOfBoundsException("n:"+n);
+    public DRDBDevice(String DID,String OTP,String salt){
         items = new String[4];
         items[0]=DID;
         items[1]=OTP;
         items[2]=salt;
-        items[3]=n+"";
     }
 }

@@ -76,7 +76,7 @@ public class DeviceRecordDB{
         DRDBDevice[] table = new DRDBDevice[recs.size()];
         int i=0;
         for(Entry<Integer,DeviceRecord> e:recs.entrySet()){
-            table[i++] = new DRDBDevice(""+e.getKey(),e.getValue().otp,e.getValue().salt,e.getValue().crs.size());
+            table[i++] = new DRDBDevice(""+e.getKey(),e.getValue().otp,e.getValue().salt);
         }
         return table;
     }

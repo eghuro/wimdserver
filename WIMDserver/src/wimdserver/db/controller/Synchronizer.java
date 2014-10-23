@@ -60,14 +60,14 @@ public class Synchronizer {
         }
     }
     
-    public void synchronizeUserDeviceDB(UserDeviceDB uddb){
+    public void synchronizeUserDeviceDB(UserDeviceDB uddb) throws ParseException{
         String[] keys=getKeys(uddb.getTable(),"UDDB");
         for(String key:keys){
             uddb.setRecord(Integer.parseInt(key), DRIVER.getRowByKey("UDDB", key).getItem("uid"));
         }
     }
     
-    private String[] getKeys(Row[] as,String table){
+    private String[] getKeys(Row[] as,String table) throws ParseException{
         HashSet<String> primaries = new HashSet<>();
         //export
         for(Row a:as){//polozka v authdb
