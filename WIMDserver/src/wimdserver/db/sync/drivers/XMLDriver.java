@@ -10,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -64,17 +66,8 @@ public class XMLDriver implements IDriver {
     public Row getRowByKey(String table, String s) throws ParseException{
         if((table==null)||(s==null))
             return null;
-        NodeList tables = DOC.getElementsByTagName("table");
-        boolean found=false;
-        Element n=null;
-        for(int i=0;i<tables.getLength();i++){
-            n = (Element)tables.item(i);
-            if(n.getAttribute("name").equals(table)){
-                found=true;
-                break;
-            }
-        }
-        if(found&&(n!=null)){
+        Element n=getTable(table);
+        if(n!=null){
             NodeList rows = n.getChildNodes();
             Element r=null;
             boolean f=false;
@@ -192,25 +185,20 @@ public class XMLDriver implements IDriver {
     }
 
     @Override
-    public void rmRow(String table, String key) throws ParserConfigurationException, FileNotFoundException, TransformerException {
+    public void rmRow(String table, String key) {
         if((table==null)||(key==null)) return;
-        NodeList tables = DOC.getElementsByTagName("table");
-        Element t=null;
-        boolean fin=false;
-        for(int i=0;i<tables.getLength();i++){
-            t=(Element)tables.item(i);
-            if(t.getAttribute("name").equals(table)){
-                fin=true;
-                break;
-            }
-        }
-        if((fin)&&(t!=null)){
+        Element t=getTable(table);
+        if(t!=null){
             NodeList rows = t.getElementsByTagName("row");
             for(int i=0;i<rows.getLength();i++){
                 Element r=(Element)rows.item(i);
                 if(r.getAttribute("primary").equals(key)){
                     t.removeChild(r);
-                    writeback();
+                    try{
+                        writeback();
+                    }catch(ParserConfigurationException | FileNotFoundException | TransformerException ex){
+                        Logger.getLogger(XMLDriver.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     break;
                 }
             }
@@ -220,21 +208,17 @@ public class XMLDriver implements IDriver {
     @Override
     public void setRow(String table, Row r) {
         if((table==null)||(r==null)) return;
-        NodeList tables = DOC.getElementsByTagName("table");
-        Element t = null;
-        boolean fin=false;
-        for(int i=0;i<tables.getLength();i++){
-            t=(Element)tables.item(i);
-            if(t.getAttribute("name").equals(table)){
-                fin=true;
-                break;
-            }
-        }
-        if((fin)&&(t!=null)){  
+        Element t = getTable(table);
+        if(t!=null){  
             for(String cname:r.getColumnNames()){
                 Element row = DOC.createElement("row");
                 row.setAttribute(cname, r.getItem(cname));
                 t.appendChild(row);
+                try {
+                    writeback();
+                } catch (ParserConfigurationException | FileNotFoundException | TransformerException ex) {
+                    Logger.getLogger(XMLDriver.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
@@ -253,6 +237,19 @@ public class XMLDriver implements IDriver {
                                 new FileOutputStream(F)
                         )
                 );
+    }
+    
+    private Element getTable(String name){
+        if(name==null)return null;
+        NodeList tables = DOC.getElementsByTagName("table");
+        Element t=null;
+        for(int i=0;i<tables.getLength();i++){
+            if(((Element)(tables.item(i))).getAttribute("name").equals(name)){
+                t=(Element)tables.item(i);
+                break;
+            }
+        }
+        return t;
     }
     
 }

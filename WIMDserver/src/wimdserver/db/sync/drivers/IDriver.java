@@ -18,7 +18,7 @@ import wimdserver.db.sync.model.Row;
  */
 public interface IDriver{
     Row getRowByKey(String table,String s) throws ParseException;
-    void rmRow(String table,String key) throws ParserConfigurationException, TransformerConfigurationException, FileNotFoundException, TransformerException;
+    void rmRow(String table,String key);
     void setRow(String table,Row r);
     String[] getKeys(String table);
 }
