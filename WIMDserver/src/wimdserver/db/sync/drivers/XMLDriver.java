@@ -225,7 +225,14 @@ public class XMLDriver implements IDriver {
 
     @Override
     public String[] getKeys(String table) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(table==null) return null;
+        Element t = getTable(table);
+        NodeList rows = t.getElementsByTagName("row");
+        String[] keys = new String[rows.getLength()];
+        for(int i=0;i<rows.getLength();i++){
+            keys[i]=((Element)rows.item(i)).getAttribute("primary");
+        }
+        return keys;
     }
     
     private void writeback() throws ParserConfigurationException, TransformerConfigurationException, FileNotFoundException, TransformerException{
