@@ -5,7 +5,11 @@
  */
 package wimdserver.db.sync.drivers;
 
+import java.io.FileNotFoundException;
 import java.text.ParseException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import wimdserver.db.sync.model.Row;
 
 /**
@@ -14,7 +18,7 @@ import wimdserver.db.sync.model.Row;
  */
 public interface IDriver{
     Row getRowByKey(String table,String s) throws ParseException;
-    void rmRow(String table,String key);
+    void rmRow(String table,String key) throws ParserConfigurationException, TransformerConfigurationException, FileNotFoundException, TransformerException;
     void setRow(String table,Row r);
     String[] getKeys(String table);
 }

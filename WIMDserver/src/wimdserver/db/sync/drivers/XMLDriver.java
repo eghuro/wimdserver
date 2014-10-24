@@ -6,13 +6,22 @@
 package wimdserver.db.sync.drivers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import wimdserver.db.sync.model.AuthSalt;
@@ -29,18 +38,29 @@ import wimdserver.db.sync.model.UserDevice;
 public class XMLDriver implements IDriver {
     final String OUT_ENC="UTF-8";
     final Document DOC;
+    final File F;
     
     public XMLDriver(String fname) throws IOException, SAXException, ParserConfigurationException{
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        File f = new File(fname);
-        if(f.exists()){
+        this.F = new File(fname);
+        if(F.exists()){
             DOC = db.parse(new File(fname));
         }else{
             DOC = db.newDocument();
         }
         
     }
+    
+    /*
+        <doc>
+            <table name="">
+                <row primary="">
+                    <column name="" value="" />
+                </row>
+            </table>
+       </doc>
+    */
 
     @Override
     public Row getRowByKey(String table, String s) throws ParseException{
@@ -174,8 +194,29 @@ public class XMLDriver implements IDriver {
     }
 
     @Override
-    public void rmRow(String table, String key) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void rmRow(String table, String key) throws ParserConfigurationException, FileNotFoundException, TransformerException {
+        if((table==null)||(key==null)) return;
+        NodeList tables = DOC.getElementsByTagName("table");
+        Element t=null;
+        boolean fin=false;
+        for(int i=0;i<tables.getLength();i++){
+            t=(Element)tables.item(i);
+            if(t.getAttribute("name").equals(table)){
+                fin=true;
+                break;
+            }
+        }
+        if((fin)&&(t!=null)){
+            NodeList rows = t.getElementsByTagName("row");
+            for(int i=0;i<rows.getLength();i++){
+                Element r=(Element)rows.item(i);
+                if(r.getAttribute("primary").equals(key)){
+                    t.removeChild(r);
+                    break;
+                }
+            }
+        }
+        writeback();
     }
 
     @Override
@@ -186,6 +227,17 @@ public class XMLDriver implements IDriver {
     @Override
     public String[] getKeys(String table) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private void writeback() throws ParserConfigurationException, TransformerConfigurationException, FileNotFoundException, TransformerException{
+        TransformerFactory.newInstance().
+                newTransformer().
+                transform(
+                        new DOMSource(DOC), 
+                        new StreamResult(
+                                new FileOutputStream(F)
+                        )
+                );
     }
     
 }
