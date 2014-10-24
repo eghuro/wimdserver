@@ -170,7 +170,7 @@ public class XMLDriver implements IDriver {
                 }
             }
         }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new ParseException("No return!",0);
     }
 
     @Override
