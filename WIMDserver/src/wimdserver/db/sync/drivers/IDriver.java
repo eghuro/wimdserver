@@ -5,6 +5,7 @@
  */
 package wimdserver.db.sync.drivers;
 
+import java.text.ParseException;
 import wimdserver.db.sync.model.Row;
 
 /**
@@ -12,7 +13,7 @@ import wimdserver.db.sync.model.Row;
  * @author Alexander Mansurov <alexander.mansurov@gmail.com>
  */
 public interface IDriver{
-    Row getRowByKey(String table,String s) throws Exception;
+    Row getRowByKey(String table,String s) throws ParseException;
     void rmRow(String table,String key);
     void setRow(String table,Row r);
     String[] getKeys(String table);
