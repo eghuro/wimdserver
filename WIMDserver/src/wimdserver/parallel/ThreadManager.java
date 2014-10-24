@@ -22,47 +22,67 @@ class ThreadManager {
     
     private final int MAXC=5;
     
-    private final LinkedList<ProtocolThread> threads;
+    private final ProtocolThread[] threads;
+    int i;
     
     private ThreadManager(){
-        this.threads = new LinkedList<>();
+        this.threads = new ProtocolThread[MAXC];
+        for(int j=0;j<MAXC;j++){
+            threads[j]=null;
+        }
+        this.i=0;
     }
     
     public synchronized boolean GetAvailable(){
-        return threads.size()<MAXC;
+        return threads.length<MAXC;
     }
     
     public synchronized void Add(ProtocolThread pt){
-        threads.add(pt);
+        for(int j=0;j<MAXC;j++){
+            if(threads[j]==null){
+                threads[j]=pt;
+                i++;
+                break;
+            }
+        }
     }
     
     public synchronized void Remove(ProtocolThread pt){
-        threads.remove(pt);
-        if(threads.size()<MAXC){
-            this.notifyAll();
+        for(int j=0;j<MAXC;j++){
+            if(threads[j]==pt){
+                threads[j]=null;
+                if((i--)<MAXC)
+                    this.notifyAll();
+            }
         }
     }
     
     public synchronized void New(Socket s){
-        ProtocolThread pt;
-        pt = new ProtocolThread(s);
-        threads.add(pt);
-        pt.start();
+        for(int j=0;j<MAXC;j++){
+            if(threads[j]==null){
+                ProtocolThread pt;
+                pt = new ProtocolThread(s);
+                threads[j]=pt;
+                pt.start();
+                break;
+            }
+        }
+        
     }
     
     public synchronized void Stop(){
-        threads.stream().forEach((ProtocolThread pt) -> {
+        for(ProtocolThread pt:threads){
             try {
                 pt.join();
             } catch (InterruptedException ex) {
                 TM.ForceStop();
             }
-        });
+        }
     }
     
     public synchronized void ForceStop(){
-        threads.stream().forEach((pt) -> {
+        for(ProtocolThread pt:threads){
             pt.interrupt();
-        });
+        }
     }
 }

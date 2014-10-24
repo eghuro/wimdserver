@@ -51,6 +51,7 @@ public class Communicator {
                             break;
                         default: throw new UnsupportedOperationException(pr.name());
                     }
+                    sb.setLength(0);
                 }//jinak jde o bily znak na zacatku .. vynechavam
             } else {
                 sb.append(c);
